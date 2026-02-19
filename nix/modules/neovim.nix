@@ -56,6 +56,8 @@
       vim.g.mapleader = " "         
       vim.opt.clipboard = "unnamedplus"
       vim.opt.termguicolors = true
+      vim.opt.laststatus = 3        -- 전역 상태줄 (Global Statusline)
+      vim.opt.cmdheight = 1         -- 커맨드 라인 높이 유지
 
       -- [Vim Tmux Navigator]
       vim.g.tmux_navigator_no_mappings = 1
