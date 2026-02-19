@@ -198,7 +198,7 @@
       end
 
       -- 사용 중인 언어 서버들 목록 (packages.nix에 설치된 것들)
-      local servers = { 'gopls', 'clangd', 'nil_ls' }
+      local servers = { 'gopls', 'nil_ls' }
 
       -- Neovim 0.11+ 방식 (vim.lsp.config)
       if vim.lsp.config then
@@ -206,6 +206,15 @@
           vim.lsp.config(lsp, { capabilities = capabilities })
           vim.lsp.enable(lsp)
         end
+        -- clangd 전용 안전 설정
+        vim.lsp.config('clangd', {
+          capabilities = capabilities,
+          cmd = {
+            "clangd",
+            "--offset-encoding=utf-16",
+          }
+        })
+        vim.lsp.enable('clangd')
       else
         -- Fallback: Neovim 0.10.x 이하 (nvim-lspconfig)
         local lsp_ok, lspconfig = pcall(require, "lspconfig")

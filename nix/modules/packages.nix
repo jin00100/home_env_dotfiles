@@ -25,7 +25,8 @@
     nil           # Nix Language Server
     lua51Packages.jsregexp # Luasnip dependency
     pkg-config
-    clang-tools cmake gnumake go gopls
+    clang-tools   # clangd 등 LSP 도구 (컴파일러 본체와 충돌 방지용)
+    cmake gnumake go gopls
     
     # (선택) clang이 필요한 경우만 유지. 보통 gcc와 충돌할 수 있으므로 
     # nvim treesitter 용으로는 gcc + binutils 조합이 가장 안정적입니다.
