@@ -18,8 +18,12 @@
     # [개발 도구]
     gcc
     binutils
+    rustc
+    cargo
     nodejs
     ast-grep      # ast-grep CLI
+    nil           # Nix Language Server
+    lua51Packages.jsregexp # Luasnip dependency
     pkg-config
     clang-tools cmake gnumake go gopls
     

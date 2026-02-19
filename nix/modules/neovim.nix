@@ -8,6 +8,9 @@
     vimAlias = true;
     # wrapRc = true;  <-- 이 줄을 삭제하거나 주석 처리하세요.
 
+    # Lua 라이브러리 추가 (jsregexp 등)
+    extraLuaPackages = ps: [ ps.jsregexp ];
+
     # 1. 플러그인 목록
     plugins = with pkgs.vimPlugins; [
       tokyonight-nvim
@@ -24,6 +27,7 @@
       indent-blankline-nvim
       bufferline-nvim
       sg-nvim           # ast-grep
+      mini-nvim         # mini.icons 등
       oil-nvim          # 파일 관리
       comment-nvim      # 주석
       nvim-autopairs    # 괄호 자동완성
@@ -122,7 +126,29 @@
 
       -- [ast-grep (sg.nvim) 설정]
       safe_require("sg", function(sg)
-        sg.setup()
+        sg.setup({
+          enable_cody = false,    -- Cody AI 비활성화
+          accept_tos = true,      -- 이용약관 자동 동의
+          download_binaries = false, -- Nix에서 관리하므로 자동 다운로드 방지
+          chat = { enabled = false }, -- 채팅 기능 비활성화
+          -- Sourcegraph 인증 무시를 위해 빈 설정을 명시적으로 추가 시도
+        })
+      end)
+
+      -- [Mini.icons 설정]
+      safe_require("mini.icons", function(icons)
+        icons.setup()
+        icons.mock_nvim_web_devicons()
+      end)
+
+      -- [Luasnip 경고 무시 및 jsregexp 설정]
+      -- Nix에서 라이브러리를 직접 빌드하기 힘드므로 특정 기능에 대한 경고를 우회합니다.
+      safe_require("luasnip", function(luasnip)
+        luasnip.config.set_config({
+          history = true,
+          updateevents = "TextChanged,TextChangedI",
+          delete_check_events = "TextChanged",
+        })
       end)
 
       -- [Neo-tree 키맵]
@@ -164,18 +190,29 @@
         })
       end
 
-      local lsp_ok, lspconfig = pcall(require, "lspconfig")
-      if lsp_ok then
-        local capabilities = {}
-        local cmp_lsp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-        if cmp_lsp_ok then
-          capabilities = cmp_nvim_lsp.default_capabilities()
-        end
-        
-        -- 사용 중인 언어 서버들 활성화
-        local servers = { 'gopls', 'clangd', 'nil_ls' }
+      -- [LSP & Autocomplete 설정 (Modern 0.11+)]
+      local capabilities = {}
+      local cmp_lsp_ok, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+      if cmp_lsp_ok then
+        capabilities = cmp_nvim_lsp.default_capabilities()
+      end
+
+      -- 사용 중인 언어 서버들 목록 (packages.nix에 설치된 것들)
+      local servers = { 'gopls', 'clangd', 'nil_ls' }
+
+      -- Neovim 0.11+ 방식 (vim.lsp.config)
+      if vim.lsp.config then
         for _, lsp in ipairs(servers) do
-          lspconfig[lsp].setup { capabilities = capabilities }
+          vim.lsp.config(lsp, { capabilities = capabilities })
+          vim.lsp.enable(lsp)
+        end
+      else
+        -- Fallback: Neovim 0.10.x 이하 (nvim-lspconfig)
+        local lsp_ok, lspconfig = pcall(require, "lspconfig")
+        if lsp_ok then
+          for _, lsp in ipairs(servers) do
+            lspconfig[lsp].setup { capabilities = capabilities }
+          end
         end
       end
     '';

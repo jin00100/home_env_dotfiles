@@ -1,100 +1,66 @@
-# Starship Tokyo Night Preset
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-[](fg:#7aa2f7)\
-$os\
-$username\
-[](bg:#3b4261 fg:#7aa2f7)\
+[░▒▓](#a3aed2)\
+[  ](bg:#a3aed2 fg:#090c0c)\
+[](bg:#769ff0 fg:#a3aed2)\
 $directory\
-[](fg:#3b4261 bg:#24283b)\
+[](fg:#769ff0 bg:#394260)\
 $git_branch\
 $git_status\
-[](fg:#24283b bg:#1f2335)\
+[](fg:#394260 bg:#212736)\
 $nodejs\
 $rust\
 $golang\
 $php\
-[](fg:#1f2335 bg:#16161e)\
+[](fg:#212736 bg:#1d2230)\
 $time\
-[ ](fg:#16161e)\
-"""
-
-# Disable the blank line at the start of the prompt
-add_newline = true
-
-[os]
-disabled = false
-style = "bg:#7aa2f7 fg:#16161e"
-
-[os.symbols]
-Windows = "󰍲"
-Ubuntu = "󰕈"
-SUSE = ""
-Raspbian = "󰐚"
-Mint = "󰣭"
-Macos = "󰀵"
-Linux = "󰌽"
-NixOS = ""
-Gentoo = "󰣨"
-Fedora = "󰣛"
-Alpine = ""
-Amazon = ""
-Android = "󰄖"
-Arch = "󰣇"
-Artix = "󰣍"
-EndeavourOS = ""
-Debian = "󰣚"
-
-[username]
-show_always = true
-style_user = "bg:#7aa2f7 fg:#16161e"
-style_root = "bg:#7aa2f7 fg:#16161e"
-format = '[ $user ]($style)'
+[ ](fg:#1d2230)\
+\n$character"""
 
 [directory]
-style = "bg:#3b4261 fg:#7aa2f7"
+style = "fg:#e3e5e5 bg:#769ff0"
 format = "[ $path ]($style)"
 truncation_length = 3
 truncation_symbol = "…/"
 
 [directory.substitutions]
 "Documents" = "󰈙 "
-"Downloads" = "󰇚 "
-"Music" = "󰝚 "
-"Pictures" = "󰙅 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
 
 [git_branch]
 symbol = ""
-style = "bg:#24283b fg:#7aa2f7"
-format = '[[ $symbol $branch ]($style)]($style)'
+style = "bg:#394260"
+format = '[[ $symbol $branch ](fg:#769ff0 bg:#394260)]($style)'
 
 [git_status]
-style = "bg:#24283b fg:#7aa2f7"
-format = '[[($all_status$ahead_behind )]($style)]($style)'
+style = "bg:#394260"
+format = '[[($all_status$ahead_behind )](fg:#769ff0 bg:#394260)]($style)'
 
 [nodejs]
 symbol = ""
-style = "bg:#1f2335 fg:#7aa2f7"
-format = '[[ $symbol ($version) ]($style)]($style)'
+style = "bg:#212736"
+format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
 
 [rust]
 symbol = ""
-style = "bg:#1f2335 fg:#7aa2f7"
-format = '[[ $symbol ($version) ]($style)]($style)'
+style = "bg:#212736"
+format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
 
 [golang]
 symbol = ""
-style = "bg:#1f2335 fg:#7aa2f7"
-format = '[[ $symbol ($version) ]($style)]($style)'
+style = "bg:#212736"
+format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
 
 [php]
 symbol = ""
-style = "bg:#1f2335 fg:#7aa2f7"
-format = '[[ $symbol ($version) ]($style)]($style)'
+style = "bg:#212736"
+format = '[[ $symbol ($version) ](fg:#769ff0 bg:#212736)]($style)'
 
 [time]
 disabled = false
 time_format = "%R" # Hour:Minute Format
-style = "bg:#16161e fg:#7aa2f7"
-format = '[[ 󱑒 $time ]($style)]($style)'
+style = "bg:#1d2230"
+format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'
