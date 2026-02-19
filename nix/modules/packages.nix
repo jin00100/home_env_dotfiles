@@ -16,12 +16,16 @@
     xclip xsel wl-clipboard 
     
     # [개발 도구]
-    # gcc
+    gcc
+    binutils
     nodejs
-    clang
-    # binutils
+    ast-grep      # ast-grep CLI
     pkg-config
     clang-tools cmake gnumake go gopls
+    
+    # (선택) clang이 필요한 경우만 유지. 보통 gcc와 충돌할 수 있으므로 
+    # nvim treesitter 용으로는 gcc + binutils 조합이 가장 안정적입니다.
+    # clang 
     
     # (선택) Pyenv가 꼭 필요하다면 추가 (Nix에서는 보통 shell.nix로 대체함)
     # pyenv 

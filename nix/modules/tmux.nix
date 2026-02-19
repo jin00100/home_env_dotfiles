@@ -20,8 +20,22 @@
       }
     ];
     extraConfig = ''
-      # 1. 터미널 클립보드 프로토콜(OSC 52) 설정
-      # GNOME Terminal은 이를 완벽히 지원하지 않으므로, 외부 도구(xclip/wl-copy)에 의존하도록 합니다.
+      # 1. Vim-Tmux Navigator Alt (Meta) Key Bindings
+      # Ctrl+j 충돌 방지를 위해 Alt(M-) 키로 변경합니다.
+      is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
+          | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?g?(view|l?n?vim?x?|fzf)(diff)?$'"
+      bind-key -n 'M-h' if-shell "$is_vim" 'send-keys M-h'  'select-pane -L'
+      bind-key -n 'M-j' if-shell "$is_vim" 'send-keys M-j'  'select-pane -D'
+      bind-key -n 'M-k' if-shell "$is_vim" 'send-keys M-k'  'select-pane -U'
+      bind-key -n 'M-l' if-shell "$is_vim" 'send-keys M-l'  'select-pane -R'
+
+      # 기존 Ctrl 매핑 해제 (Vim-Tmux Navigator 플러그인 기본값 무시)
+      unbind-key -n C-h
+      unbind-key -n C-j
+      unbind-key -n C-k
+      unbind-key -n C-l
+
+      # 2. 터미널 클립보드 프로토콜(OSC 52) 설정
       set -s set-clipboard off
       set -as terminal-features ',xterm-256color:clipboard'
 
