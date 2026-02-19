@@ -6,7 +6,7 @@
     enable = true;
     enableZshIntegration = true;
     # 같은 폴더의 starship.toml 파일을 읽어서 적용
-    settings = lib.hm.gvariant.mkTuple [ (lib.importTOML ./starship.toml) ];
+    settings = lib.importTOML ./starship.toml;
   };
 
   # 2. Zsh 설정
