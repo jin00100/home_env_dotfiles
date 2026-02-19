@@ -25,9 +25,7 @@
     # 폰트
     maple-mono.NF nerd-fonts.ubuntu-mono 
 
-  ] ++ (lib.optionals (!isWSL) [
-    ghostty
-  ]);
+  ];
 
   # [Gemini CLI 자동 설치]
   home.activation.installGeminiCli = lib.hm.dag.entryAfter ["writeBoundary"] ''

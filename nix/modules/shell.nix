@@ -61,8 +61,8 @@
       # [New] 클립보드 복사 Alias
       tocb = "xclip -selection clipboard";
 
-      hms = "home-manager switch --flake ~/dotfiles/#yongminari";
-      hms-wsl = "home-manager switch --flake ~/dotfiles/#yongminari-wsl";
+      hms = "home-manager switch --flake ~/home_env_dotfiles/#yongminari";
+      hms-wsl = "home-manager switch --flake ~/home_env_dotfiles/#yongminari-wsl";
       vi = "nvim";
       vim = "nvim";
     };
