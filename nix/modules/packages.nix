@@ -18,6 +18,9 @@
     # [개발 도구]
     nodejs
     gcc
+    clang
+    binutils
+    pkg-config
     clang-tools cmake gnumake go gopls
     
     # (선택) Pyenv가 꼭 필요하다면 추가 (Nix에서는 보통 shell.nix로 대체함)

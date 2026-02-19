@@ -3,21 +3,49 @@
 ## 1. 개요
 
 이 문서는 Nix Home Manager를 사용하여 리눅스 개발 환경을 구축하는 최종 가이드이다.
-Native Linux(Ubuntu)와 WSL 환경을 하나의 코드베이스로 관리하며, Starship(Jetpack) 테마와 Tmux/Neovim 생산성 도구가 완벽하게 통합되어 있다.
+Native Linux(Ubuntu 등)와 WSL 환경을 하나의 코드베이스로 관리하며, Starship(Jetpack) 테마와 Tmux/Neovim 생산성 도구가 완벽하게 통합되어 있다.
 
 **주요 기능:**
 - **Core:** Nix Flakes + Home Manager (Modular Structure)
 - **Shell:** Zsh + Starship (Jetpack) + Eza + Zoxide + Bat + FZF
 - **Editor:** Neovim (LSP, Treesitter, Telescope, Neo-tree)
 - **Terminal:** Tmux (Prefix Ctrl+g, Vim-Navigator, Auto-start)
-- **Auto-Install:** Node.js (LTS), Gemini CLI, Ghostty (Native Only)
+- **Auto-Install:** Node.js (LTS), Gemini CLI, Tree-sitter CLI
+- **Dev Tools:** gcc, clang, make, cmake, go, gopls
 
-## 2. 디렉토리 구조
+## 2. 필수 사전 준비 (Manual Steps)
+
+### 2.1 Ghostty 터미널 설치 (수동)
+Ghostty는 최신 터미널 에뮬레이터로, 아직 패키지 매니저에 안정적으로 포함되지 않은 경우가 많아 직접 설치를 권장한다.
+
+1.  **다운로드:** [Ghostty 공식 웹사이트](https://ghostty.org/download) 또는 GitHub Release 페이지에서 자신의 OS에 맞는 버전을 다운로드한다.
+2.  **설치 (Ubuntu/Debian 예시):**
+    ```bash
+    # 다운로드 받은 .deb 파일이 있는 경로로 이동
+    sudo dpkg -i ghostty_*.deb
+    sudo apt-get install -f # 의존성 문제 발생 시 해결
+    ```
+3.  **설정 파일:**
+    Home Manager가 `~/.config/ghostty/config` 파일을 자동으로 생성 관리하므로, 별도의 설정 파일을 수동으로 만들 필요는 없다. (설정 내용은 `nix/home.nix` 참조)
+
+### 2.2 Nix 설치 (Multi-user)
+```bash
+sh <(curl -L https://nixos.org/nix/install) --daemon
+```
+
+### 2.3 Experimental Features 활성화
+Flakes 기능을 사용하기 위해 필수적이다.
+```bash
+mkdir -p ~/.config/nix
+echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+```
+
+## 3. 디렉토리 구조
 
 설정 파일은 기능별로 모듈화되어 `nix/modules` 내부에 위치한다.
 
 ```text
-~/dotfiles
+~/home_env_dotfiles
 ├── flake.nix             # [Entry] OS 환경(Native/WSL) 구분
 ├── nix
 │   ├── home.nix          # [Main] 모듈 로더 및 기본 설정
@@ -31,9 +59,10 @@ Native Linux(Ubuntu)와 WSL 환경을 하나의 코드베이스로 관리하며,
 └── .gitignore
 ```
 
-## 3. 파일별 상세 코드
+## 4. 파일별 상세 코드
 
-### 3.1 ~/dotfiles/flake.nix
+### 4.1 ~/home_env_dotfiles/flake.nix
+Native Linux와 WSL 환경을 구분하여 Home Manager 설정을 로드한다.
 
 ```nix
 {
@@ -59,6 +88,7 @@ Native Linux(Ubuntu)와 WSL 환경을 하나의 코드베이스로 관리하며,
           modules = [ ./nix/home.nix ];
           extraSpecialArgs = { isWSL = false; };
         };
+
         # 2. WSL
         "yongminari-wsl" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
@@ -70,7 +100,8 @@ Native Linux(Ubuntu)와 WSL 환경을 하나의 코드베이스로 관리하며,
 }
 ```
 
-### 3.2 ~/dotfiles/nix/home.nix
+### 4.2 ~/home_env_dotfiles/nix/home.nix
+모든 모듈을 임포트하고 공통 설정을 관리한다. Ghostty 설정도 여기서 관리된다.
 
 ```nix
 { config, pkgs, ... }:
@@ -80,7 +111,6 @@ Native Linux(Ubuntu)와 WSL 환경을 하나의 코드베이스로 관리하며,
   home.homeDirectory = "/home/yongminari";
   home.stateVersion = "25.11"; 
 
-  # 모듈 로드
   imports = [
     ./modules/shell.nix
     ./modules/packages.nix
@@ -89,11 +119,26 @@ Native Linux(Ubuntu)와 WSL 환경을 하나의 코드베이스로 관리하며,
     ./modules/git.nix
   ];
 
+  targets.genericLinux.enable = true;
+  fonts.fontconfig.enable = true;
+
+  # Ghostty 설정
+  xdg.configFile."ghostty/config".text = ''
+    font-family = "Maple Mono NF"
+    font-size = 12
+    window-width = 120
+    window-height = 60
+    window-decoration = auto
+    background-opacity = 0.85
+    theme = Dracula
+  '';
+
   programs.home-manager.enable = true;
 }
 ```
 
-### 3.3 ~/dotfiles/nix/modules/packages.nix
+### 4.3 ~/home_env_dotfiles/nix/modules/packages.nix
+필수 패키지와 개발 도구를 설치한다. `gemini-cli`와 `tree-sitter-cli` 자동 설치 스크립트가 포함되어 있다.
 
 ```nix
 { config, pkgs, lib, isWSL, ... }:
@@ -108,21 +153,21 @@ Native Linux(Ubuntu)와 WSL 환경을 하나의 코드베이스로 관리하며,
   ];
 
   home.packages = with pkgs; [
-    # 유틸
-    neofetch htop ripgrep fd unzip xclip lsb-release
+    # [시스템 유틸]
+    neofetch htop ripgrep fd unzip lazygit
+    lsb-release
+    xclip xsel wl-clipboard 
     
-    # 개발 도구
-    nodejs          # Node.js LTS
+    # [개발 도구]
+    nodejs
+    gcc clang binutils pkg-config # Essential Build Tools
     clang-tools cmake gnumake go gopls
-
+    
     # 폰트
     maple-mono.NF nerd-fonts.ubuntu-mono 
+  ];
 
-  ] ++ (lib.optionals (!isWSL) [
-    ghostty # WSL이 아닐 때만 설치
-  ]);
-
-  # Gemini CLI 자동 설치 스크립트
+  # [Gemini CLI & Tree-sitter CLI 자동 설치]
   home.activation.installGeminiCli = lib.hm.dag.entryAfter ["writeBoundary"] ''
     npm_global_dir="${config.home.homeDirectory}/.npm-global"
     mkdir -p "$npm_global_dir"
@@ -132,100 +177,17 @@ Native Linux(Ubuntu)와 WSL 환경을 하나의 코드베이스로 관리하며,
       echo "Installing @google/gemini-cli..."
       npm install -g --prefix "$npm_global_dir" @google/gemini-cli
     fi
+
+    if ! command -v tree-sitter &> /dev/null; then
+      echo "Installing tree-sitter-cli..."
+      npm install -g --prefix "$npm_global_dir" tree-sitter-cli
+    fi
   '';
 }
 ```
 
-### 3.4 ~/dotfiles/nix/modules/shell.nix
-
-```nix
-{ config, pkgs, lib, ... }:
-
-{
-  # Starship (테마 파일 로드)
-  programs.starship = {
-    enable = true;
-    enableZshIntegration = true;
-    settings = lib.importTOML ./starship.toml;
-  };
-
-  # Modern Tools
-  programs.eza = { enable = true; enableZshIntegration = true; icons = "auto"; git = true; };
-  programs.zoxide = { enable = true; enableZshIntegration = true; options = [ "--cmd cd" ]; };
-  programs.bat = { enable = true; config = { theme = "Dracula"; }; };
-  programs.fzf = { enable = true; enableZshIntegration = true; };
-
-  # Zsh 설정
-  programs.zsh = {
-    enable = true;
-    enableCompletion = true;
-    autosuggestion.enable = true;
-    syntaxHighlighting.enable = true;
-
-    oh-my-zsh = {
-      enable = true;
-      plugins = [ "git" "virtualenv" "history-substring-search" ];
-    };
-
-    shellAliases = {
-      ls = "eza";
-      ll = "eza -l --icons --git -a";
-      lt = "eza --tree --level=2 --long --icons --git";
-      cat = "bat";
-      tocb = "xclip -selection clipboard";
-      
-      hms = "home-manager switch --flake ~/dotfiles/#yongminari";
-      hms-wsl = "home-manager switch --flake ~/dotfiles/#yongminari-wsl";
-      vi = "nvim"; vim = "nvim";
-    };
-
-    initContent = ''
-      export PATH=$HOME/.local/bin:$PATH
-      bindkey '^[[A' history-substring-search-up
-      bindkey '^[[B' history-substring-search-down
-
-      # Pyenv 초기화 (설치된 경우만)
-      if command -v pyenv &>/dev/null; then
-        eval "$(pyenv init -)"
-        eval "$(pyenv virtualenv-init -)"
-      fi
-
-      # ---------------------------------------------------------
-      # Welcome Message (Tmux 내부일 때만)
-      # ---------------------------------------------------------
-      if [[ -n "$TMUX" ]]; then
-        echo "\x1b[40;1;31m
-      __      __        .__                       ._. \x1b[40;1;31m $(lsb_release -d 2>/dev/null || echo "Linux")
-     /  \    /  \ ____ |  |    ____  ____   _____    ____| | \x1b[40;1;33m HOST       :      $(uname -n)
-     \   \/\/   // __ \|  | _/ ___\/  _ \ /     \_/ __ \ | \x1b[40;1;34m Kernel     :      $(uname -r)
-      \        /\  ___/|  |_\  \__(  <_> )  Y Y  \  ___/\| \x1b[40;1;35m Date       :      $(date)
-       \__/\  /  \___  >____/\___  >____/|__|_|  /\___  >_ \x1b[40;1;36m Shell      :      $(zsh --version | awk '{print $1, $2}')
-            \/        \/           \/            \/      \/\/ \x1b[40;1;37m Who        :      $(whoami)
-    \x1b[0m"
-        echo "Welcome to \x1b[94mZsh\x1b[94m, \x1b[1m$USER!\x1b[0m"
-        echo "Current directory: \x1b[1m$(pwd)\x1b[0m"
-      fi
-
-      # ---------------------------------------------------------
-      # Tmux 자동 실행 (VS Code 및 중복 실행 방지)
-      # ---------------------------------------------------------
-      function is_vscode() {
-        if [[ -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" || "$TERM_PROGRAM" == "vscode" ]]; then
-          return 0
-        else
-          return 1
-        fi
-      }
-
-      if [[ $- == *i* ]] && [[ -z "$TMUX" ]] && ! is_vscode; then
-        exec tmux
-      fi
-    '';
-  };
-}
-```
-
-### 3.5 ~/dotfiles/nix/modules/neovim.nix
+### 4.4 ~/home_env_dotfiles/nix/modules/neovim.nix
+Neovim 설정. `tree-sitter-cli` 에러 해결을 위해 `packages.nix`에서 CLI 도구를 설치하고, 여기서는 플러그인과 Lua 설정을 관리한다.
 
 ```nix
 { config, pkgs, ... }:
@@ -234,27 +196,61 @@ Native Linux(Ubuntu)와 WSL 환경을 하나의 코드베이스로 관리하며,
   programs.neovim = {
     enable = true;
     defaultEditor = true;
-    viAlias = true; vimAlias = true;
+    viAlias = true; 
+    vimAlias = true;
 
     plugins = with pkgs.vimPlugins; [
-      vim-tmux-navigator which-key-nvim nvim-web-devicons
-      { plugin = lualine-nvim; config = "require('lualine').setup { options = { theme = 'auto' } }"; type = "lua"; }
-      { plugin = neo-tree-nvim; config = "vim.keymap.set('n', '<C-n>', ':Neotree toggle<CR>', { silent = true })"; type = "lua"; }
-      nui-nvim plenary-nvim
-      { plugin = telescope-nvim; config = "local b=require('telescope.builtin'); vim.keymap.set('n','<leader>f',b.find_files,{}); vim.keymap.set('n','<leader>g',b.live_grep,{})"; type = "lua"; }
-      { plugin = nvim-treesitter.withAllGrammars; config = "require('nvim-treesitter.configs').setup { highlight = { enable = true } }"; type = "lua"; }
+      catppuccin-nvim
+      vim-tmux-navigator 
+      which-key-nvim 
+      nvim-web-devicons
+      lualine-nvim
+      neo-tree-nvim
+      nui-nvim 
+      plenary-nvim
+      telescope-nvim
+      nvim-treesitter.withAllGrammars 
     ];
 
     initLua = ''
-      vim.opt.number = true; vim.opt.relativenumber = true
-      vim.opt.tabstop = 4; vim.opt.shiftwidth = 4; vim.opt.expandtab = true
-      vim.g.mapleader = " "; vim.opt.clipboard = "unnamedplus"
+      -- (생략: Lua 설정 코드, GitHub 레포지토리 참조)
+      -- 핵심: Treesitter, Telescope, Neo-tree, Catppuccin 테마 설정
     '';
   };
 }
 ```
 
-### 3.6 ~/dotfiles/nix/modules/tmux.nix
+### 4.5 ~/home_env_dotfiles/nix/modules/shell.nix
+Zsh, Starship, Eza, Bat, FZF 등 쉘 환경 설정. Tmux 자동 실행 로직이 포함됨.
+
+```nix
+{ config, pkgs, lib, ... }:
+
+{
+  # ... Starship, Eza, Zoxide, Bat, FZF 설정 ...
+
+  programs.zsh = {
+    enable = true;
+    # ... Oh-My-Zsh 및 플러그인 설정 ...
+    shellAliases = {
+      ls = "eza";
+      ll = "eza -l --icons --git -a";
+      lt = "eza --tree --level=2 --long --icons --git";
+      cat = "bat";
+      tocb = "xclip -selection clipboard"; # 클립보드 복사
+      hms = "home-manager switch --flake ~/home_env_dotfiles/#yongminari";
+      hms-wsl = "home-manager switch --flake ~/home_env_dotfiles/#yongminari-wsl";
+      vi = "nvim"; vim = "nvim";
+    };
+    initContent = ''
+      # ... Tmux 자동 실행 및 Welcome Message 스크립트 ...
+    '';
+  };
+}
+```
+
+### 4.6 ~/home_env_dotfiles/nix/modules/tmux.nix
+Tmux 설정. 클립보드 연동(OSC 52) 및 Vim Navigator 설정 포함.
 
 ```nix
 { config, pkgs, ... }:
@@ -263,69 +259,32 @@ Native Linux(Ubuntu)와 WSL 환경을 하나의 코드베이스로 관리하며,
   programs.tmux = {
     enable = true;
     prefix = "C-g";
-    mouse = true;
-    baseIndex = 1;
-    escapeTime = 0;
-    keyMode = "vi";
-    customPaneNavigationAndResize = true;
-
-    plugins = with pkgs; [
-      tmuxPlugins.sensible
-      tmuxPlugins.vim-tmux-navigator
-      { plugin = tmuxPlugins.power-theme; extraConfig = "set -g @tmux_power_theme 'coral'"; }
-    ];
+    # ... 마우스, vi 모드, 플러그인 설정 ...
     extraConfig = ''
-      bind-key -T copy-mode-vi v send-keys -X begin-selection
-      bind-key -T copy-mode-vi y send-keys -X copy-selection-and-cancel
+      # 클립보드 연동 (xclip/wl-copy)
+      # Vim-Tmux Navigator 키바인딩
     '';
   };
 }
 ```
 
-### 3.7 ~/dotfiles/nix/modules/git.nix
+## 5. 설치 및 적용
 
-```nix
-{ config, pkgs, ... }:
-{
-  programs.git = {
-    enable = true;
-    settings = {
-      user = { name = "yongminari"; email = "easyid21c@gmail.com"; };
-      init.defaultBranch = "master";
-    };
-  };
-}
+```bash
+# 1. 레포지토리 클론 (또는 다운로드)
+git clone <YOUR_REPO_URL> ~/home_env_dotfiles
+cd ~/home_env_dotfiles
+
+# 2. Home Manager 적용
+# Native Linux
+home-manager switch --flake .#yongminari
+
+# WSL
+home-manager switch --flake .#yongminari-wsl
 ```
 
-## 4. 설치 및 적용 방법
-... (기존 내용) ...
+## 6. 트러블슈팅
 
-## 5. 핵심 이슈 해결 (Troubleshooting)
-
-### 5.1 Experimental Features 활성화 에러
-`home-manager switch` 명령 시 `error: experimental Nix feature 'nix-command' is disabled` 에러가 발생하면, Nix 설정 파일에 Flakes 기능을 명시적으로 허용해야 한다.
-
-- **해결법:**
-  ```bash
-  mkdir -p ~/.config/nix
-  echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
-  # 멀티 유저 설치인 경우 sudo 필요할 수 있음
-  # sudo vi /etc/nix/nix.conf
-  ```
-
-### 5.2 기본 셸 전환 (chsh) 및 경로 문제
-Nix를 통해 설치한 Zsh는 `/usr/bin/zsh`가 아닌 사용자 프로필 경로(`~/.nix-profile/bin/zsh`)에 위치한다. 이 경로를 `/etc/shells`에 등록해야 `chsh` 명령이 정상 작동한다.
-
-- **해결법:**
-  ```bash
-  # 1. Nix Zsh 경로 추출
-  NIX_ZSH_PATH=$(which zsh)
-
-  # 2. 시스템 허용 셸 목록에 등록
-  sudo sh -c "echo $NIX_ZSH_PATH >> /etc/shells"
-
-  # 3. 기본 셸 변경
-  chsh -s $NIX_ZSH_PATH
-  ```
-  *참고: WSL의 경우 설치된 배포판에 따라 `/etc/shells` 수동 수정이 필수적일 수 있다.*
-
+- **`tree-sitter-cli` 버전 에러:** Neovim 구동 시 에러가 발생하면 `home-manager switch`를 다시 실행하여 최신 `tree-sitter-cli`가 NPM을 통해 설치되도록 한다.
+- **GPU Warning:** "Non-NixOS system..." 경고는 무시해도 되며, 필요 시 경고 메시지에 나온 명령어를 `sudo`로 실행한다.
+- **폰트 깨짐:** 터미널(Ghostty 등) 폰트를 `Maple Mono NF` 또는 `UbuntuMono Nerd Font`로 설정했는지 확인한다.
