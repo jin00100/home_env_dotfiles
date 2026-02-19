@@ -38,7 +38,14 @@
     # Ctrl+R(히스토리), Ctrl+T(파일찾기) 활성화
   };
 
-  # 6. Zsh 설정
+  # 6. [New] Direnv
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
+
+  # 7. Zsh 설정
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -62,7 +69,6 @@
       tocb = "xclip -selection clipboard";
 
       hms = "home-manager switch --flake ~/home_env_dotfiles/#yongminari";
-      hms-wsl = "home-manager switch --flake ~/home_env_dotfiles/#yongminari-wsl";
       vi = "nvim";
       vim = "nvim";
     };

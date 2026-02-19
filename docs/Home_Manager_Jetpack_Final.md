@@ -3,11 +3,11 @@
 ## 1. 개요
 
 이 문서는 Nix Home Manager를 사용하여 리눅스 개발 환경을 구축하는 최종 가이드이다.
-Native Linux(Ubuntu 등)와 WSL 환경을 하나의 코드베이스로 관리하며, Starship(Jetpack) 테마와 Tmux/Neovim 생산성 도구가 완벽하게 통합되어 있다.
+Native Linux(Ubuntu 등)와 WSL 환경을 하나의 통합된 코드베이스로 관리하며, Starship(Jetpack) 테마와 Tmux/Neovim 생산성 도구가 완벽하게 통합되어 있다.
 
 **주요 기능:**
 - **Core:** Nix Flakes + Home Manager (Modular Structure)
-- **Shell:** Zsh + Starship (Jetpack) + Eza + Zoxide + Bat + FZF
+- **Shell:** Zsh + Starship (Jetpack) + Eza + Zoxide + Bat + FZF + **Direnv**
 - **Editor:** Neovim (LSP, Treesitter, Telescope, Neo-tree)
 - **Terminal:** Tmux (Prefix Ctrl+g, Vim-Navigator, Auto-start)
 - **Auto-Install:** Node.js (LTS), Gemini CLI, Tree-sitter CLI
@@ -46,14 +46,14 @@ echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
 
 ```text
 ~/home_env_dotfiles
-├── flake.nix             # [Entry] OS 환경(Native/WSL) 구분
+├── flake.nix             # [Entry] 통합 설정 엔트리
 ├── nix
 │   ├── home.nix          # [Main] 모듈 로더 및 기본 설정
 │   └── modules
 │       ├── git.nix       # Git 사용자 설정
 │       ├── neovim.nix    # Neovim 플러그인 및 설정
 │       ├── packages.nix  # 시스템 패키지 & 설치 스크립트
-│       ├── shell.nix     # Zsh, Starship, Alias, Tmux 실행 로직
+│       ├── shell.nix     # Zsh, Starship, Alias, Tmux 실행 로직, Direnv
 │       ├── starship.toml # Starship 테마 설정 (Jetpack)
 │       └── tmux.nix      # Tmux 옵션 및 키바인딩
 └── .gitignore
@@ -62,7 +62,7 @@ echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
 ## 4. 파일별 상세 코드
 
 ### 4.1 ~/home_env_dotfiles/flake.nix
-Native Linux와 WSL 환경을 구분하여 Home Manager 설정을 로드한다.
+Native Linux와 WSL 환경을 동일하게 관리하도록 통합된 설정이다.
 
 ```nix
 {
@@ -82,18 +82,10 @@ Native Linux와 WSL 환경을 구분하여 Home Manager 설정을 로드한다.
       pkgs = nixpkgs.legacyPackages.${system};
     in {
       homeConfigurations = {
-        # 1. Native Linux
+        # Native Linux & WSL (Unified)
         "yongminari" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           modules = [ ./nix/home.nix ];
-          extraSpecialArgs = { isWSL = false; };
-        };
-
-        # 2. WSL
-        "yongminari-wsl" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [ ./nix/home.nix ];
-          extraSpecialArgs = { isWSL = true; };
         };
       };
     };
@@ -141,7 +133,7 @@ Native Linux와 WSL 환경을 구분하여 Home Manager 설정을 로드한다.
 필수 패키지와 개발 도구를 설치한다. `gemini-cli`와 `tree-sitter-cli` 자동 설치 스크립트가 포함되어 있다.
 
 ```nix
-{ config, pkgs, lib, isWSL, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   home.sessionVariables = {
@@ -221,25 +213,29 @@ Neovim 설정. `tree-sitter-cli` 에러 해결을 위해 `packages.nix`에서 CL
 ```
 
 ### 4.5 ~/home_env_dotfiles/nix/modules/shell.nix
-Zsh, Starship, Eza, Bat, FZF 등 쉘 환경 설정. Tmux 자동 실행 로직이 포함됨.
+Zsh, Starship, Eza, Bat, FZF 등 쉘 환경 설정. Direnv 및 Tmux 자동 실행 로직이 포함됨.
 
 ```nix
 { config, pkgs, lib, ... }:
 
 {
-  # ... Starship, Eza, Zoxide, Bat, FZF 설정 ...
+  # 6. [New] Direnv
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+    nix-direnv.enable = true;
+  };
 
+  # 7. Zsh 설정
   programs.zsh = {
     enable = true;
-    # ... Oh-My-Zsh 및 플러그인 설정 ...
     shellAliases = {
       ls = "eza";
       ll = "eza -l --icons --git -a";
       lt = "eza --tree --level=2 --long --icons --git";
       cat = "bat";
-      tocb = "xclip -selection clipboard"; # 클립보드 복사
+      tocb = "xclip -selection clipboard"; 
       hms = "home-manager switch --flake ~/home_env_dotfiles/#yongminari";
-      hms-wsl = "home-manager switch --flake ~/home_env_dotfiles/#yongminari-wsl";
       vi = "nvim"; vim = "nvim";
     };
     initContent = ''
@@ -275,12 +271,8 @@ Tmux 설정. 클립보드 연동(OSC 52) 및 Vim Navigator 설정 포함.
 git clone <YOUR_REPO_URL> ~/home_env_dotfiles
 cd ~/home_env_dotfiles
 
-# 2. Home Manager 적용
-# Native Linux
-home-manager switch --flake .#yongminari
-
-# WSL
-home-manager switch --flake .#yongminari-wsl
+# 2. Home Manager 적용 (Native Linux & WSL 통합)
+home-manager switch --flake .#yongminari -b backup
 ```
 
 ## 6. 트러블슈팅

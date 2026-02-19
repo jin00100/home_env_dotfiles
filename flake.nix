@@ -18,18 +18,10 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in {
       homeConfigurations = {
-        # 1. Native Linux
+        # 1. Native Linux & WSL (Unified)
         "yongminari" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           modules = [ ./nix/home.nix ];
-          extraSpecialArgs = { isWSL = false; };
-        };
-
-        # 2. WSL
-        "yongminari-wsl" = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-          modules = [ ./nix/home.nix ];
-          extraSpecialArgs = { isWSL = true; };
         };
       };
     };

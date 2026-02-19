@@ -1,7 +1,7 @@
 # 🚀 Dotfiles (Nix Home Manager)
 
 **yongminari**'s declarative development environment configuration managed by **Nix Home Manager**.
-This setup supports both **Native Linux** and **WSL**, ensuring a consistent and high-performance workflow.
+This setup supports both **Native Linux** and **WSL** with a single, unified configuration, ensuring a consistent and high-performance workflow.
 
 ## ✨ Features
 
@@ -11,6 +11,7 @@ This setup supports both **Native Linux** and **WSL**, ensuring a consistent and
   - `cd` -> `zoxide` (Smarter navigation)
   - `cat` -> `bat` (Syntax highlighting)
   - `find` -> `fd` / `grep` -> `ripgrep`
+  - `direnv` -> **`direnv` (Nix-direnv integrated)**
 - **💻 Terminal Multiplexer:** **Tmux** pre-configured.
   - Auto-start on launch (except VS Code).
   - Prefix: `Ctrl + g`.
@@ -23,12 +24,12 @@ This setup supports both **Native Linux** and **WSL**, ensuring a consistent and
 ## 📂 Directory Structure
 
 ```text
-~/dotfiles
-├── flake.nix             # Entry point (Native vs WSL profiles)
+~/home_env_dotfiles
+├── flake.nix             # Entry point (Unified profile)
 └── nix
     ├── home.nix          # Main loader
     └── modules
-        ├── shell.nix     # Zsh, Starship, Aliases, Tmux autostart
+        ├── shell.nix     # Zsh, Starship, Aliases, Tmux autostart, Direnv
         ├── starship.toml # Jetpack theme config
         ├── neovim.nix    # Editor config
         ├── tmux.nix      # Multiplexer config
@@ -47,34 +48,19 @@ mkdir -p ~/.config/nix
 echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
 ```
 
-> **⚠️ Troubleshooting: Experimental Features Error**
-> If you see an error like `error: experimental Nix feature 'nix-command' is disabled`, it means Flakes are not yet enabled in your configuration. Ensure `~/.config/nix/nix.conf` (or `/etc/nix/nix.conf` for multi-user) contains:
-> `experimental-features = nix-command flakes`
-
 ### 2. Clone & Setup
 
 ```bash
-# Clone this repo to ~/dotfiles
-git clone <YOUR_REPO_URL> ~/dotfiles
-cd ~/dotfiles
-
-# Generate Starship theme (if missing)
-mkdir -p nix/modules
-starship preset jetpack > nix/modules/starship.toml
+# Clone this repo to ~/home_env_dotfiles
+git clone <YOUR_REPO_URL> ~/home_env_dotfiles
+cd ~/home_env_dotfiles
 ```
 
 ### 3. Apply Configuration
 
-**For Native Linux:**
-
 ```bash
+# Apply for both Native Linux and WSL
 nix run home-manager/master -- switch --flake .#yongminari -b backup
-```
-
-**For WSL:**
-
-```bash
-nix run home-manager/master -- switch --flake .#yongminari-wsl -b backup
 ```
 
 ### 4. Set Zsh as Default Shell (chsh)
@@ -84,7 +70,7 @@ Nix로 설치된 Zsh는 경로가 다르기 때문에 시스템이 기본 셸로
 ```bash
 # 1. Nix Zsh 경로 확인
 which zsh
-# 보통 ~/.nix-profile/bin/zsh 또는 /run/current-system/sw/bin/zsh (NixOS)
+# 보통 ~/.nix-profile/bin/zsh
 
 # 2. 유효한 셸 목록에 추가 (Root 권한 필요)
 sudo sh -c "echo $(which zsh) >> /etc/shells"
@@ -97,7 +83,7 @@ chsh -s $(which zsh)
 
 | Command | Action | Alias |
 | :--- | :--- | :--- |
-| `hms` / `hms-wsl` | Apply Nix configuration changes | `home-manager switch ...` |
+| `hms` | Apply Nix configuration changes | `home-manager switch ...` |
 | `ll` / `lt` | List files (Grid / Tree view) | `eza ...` |
 | `cd <dir>` | Smart jump to directory | `z <dir>` |
 | `vi` / `vim` | Open Neovim | `nvim` |
@@ -109,4 +95,4 @@ chsh -s $(which zsh)
 
 ---
 
-**Note:** Ghostty terminal is installed only on Native Linux environments.
+**Note:** Ghostty configuration is managed, but the binary should be installed manually on Native Linux.

@@ -1,4 +1,4 @@
-{ config, pkgs, lib, isWSL, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   home.sessionVariables = {
