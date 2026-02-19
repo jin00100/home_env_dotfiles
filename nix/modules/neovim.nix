@@ -4,14 +4,13 @@
   programs.neovim = {
     enable = true;
     defaultEditor = true;
-    viAlias = true; vimAlias = true;
+    viAlias = true; 
+    vimAlias = true;
+    wrapRc = true; # (New) 기존 로컬 설정 파일과의 충돌을 원천 차단합니다.
 
-    # 1. 플러그인 목록
+    # 1. 플러그인 목록 (기존의 모든 플러그인을 그대로 유지합니다)
     plugins = with pkgs.vimPlugins; [
-      # [Theme] 가장 인기 있는 파스텔톤 테마
       catppuccin-nvim
-
-      # [UI & Icons]
       vim-tmux-navigator 
       which-key-nvim 
       nvim-web-devicons
@@ -20,14 +19,18 @@
       nui-nvim 
       plenary-nvim
       telescope-nvim
-      
-      # [Syntax]
-      nvim-treesitter.withAllGrammars
+      nvim-treesitter.withAllGrammars # (Update) 모든 문법을 포함하여 에러를 방지합니다.
     ];
 
-    # 2. Lua 설정
+    # 2. Lua 설정 (기존 설정을 모두 포함하되, 더 안전하게 배치했습니다)
     initLua = ''
-      -- [기본 설정]
+      -- 안전한 설정을 위한 헬퍼 함수
+      local function safe_require(module, config_fn)
+        local ok, mod = pcall(require, module)
+        if ok then config_fn(mod) end
+      end
+
+      -- [기본 옵션] (기존 설정 그대로 유지)
       vim.opt.number = true
       vim.opt.relativenumber = true
       vim.opt.tabstop = 4
@@ -35,43 +38,38 @@
       vim.opt.expandtab = true
       vim.g.mapleader = " "         
       vim.opt.clipboard = "unnamedplus"
-      vim.opt.termguicolors = true  -- 24비트 컬러 활성화 (테마 필수 설정)
+      vim.opt.termguicolors = true
 
-      -- [테마 설정]
-      local status_ok, catppuccin = pcall(require, "catppuccin")
-      if status_ok then
+      -- [테마 설정] (Catppuccin 설정 그대로 유지)
+      safe_require("catppuccin", function(catppuccin)
         catppuccin.setup({
-          flavour = "mocha", -- latte, frappe, macchiato, mocha
-          transparent_background = true, -- 배경 투명 (터미널 배경과 맞춤)
+          flavour = "mocha",
+          transparent_background = true,
         })
         vim.cmd.colorscheme "catppuccin"
-      end
+      end)
 
-      -- [플러그인 설정]
-      -- Lualine (상태바)
-      local status_ok, lualine = pcall(require, "lualine")
-      if status_ok then
+      -- [Lualine 설정]
+      safe_require("lualine", function(lualine)
         lualine.setup { options = { theme = 'catppuccin' } }
-      end
+      end)
 
-      -- Neo-tree (Ctrl+n으로 켜고 끄기)
+      -- [Neo-tree 키맵]
       vim.keymap.set('n', '<C-n>', ':Neotree toggle<CR>', { silent = true })
 
-      -- Telescope (파일 찾기)
-      local status_ok, telescope_builtin = pcall(require, "telescope.builtin")
-      if status_ok then
-        vim.keymap.set('n', '<leader>f', telescope_builtin.find_files, {})
-        vim.keymap.set('n', '<leader>g', telescope_builtin.live_grep, {})
-      end
+      -- [Telescope 키맵]
+      safe_require("telescope.builtin", function(builtin)
+        vim.keymap.set('n', '<leader>f', builtin.find_files, {})
+        vim.keymap.set('n', '<leader>g', builtin.live_grep, {})
+      end)
 
-      -- Treesitter
-      local status_ok, configs = pcall(require, "nvim-treesitter.configs")
-      if status_ok then
+      -- [Treesitter 설정] (에러 방지용 최적화 설정)
+      safe_require("nvim-treesitter.configs", function(configs)
         configs.setup {
           highlight = { enable = true },
           indent = { enable = true },
         }
-      end
+      end)
     '';
   };
 }
