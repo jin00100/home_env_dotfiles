@@ -17,6 +17,7 @@
     
     # [개발 도구]
     nodejs
+    gcc
     clang-tools cmake gnumake go gopls
     
     # (선택) Pyenv가 꼭 필요하다면 추가 (Nix에서는 보통 shell.nix로 대체함)
@@ -36,6 +37,11 @@
     if ! command -v gemini &> /dev/null; then
       echo "Installing @google/gemini-cli..."
       npm install -g --prefix "$npm_global_dir" @google/gemini-cli
+    fi
+
+    if ! command -v tree-sitter &> /dev/null; then
+      echo "Installing tree-sitter-cli..."
+      npm install -g --prefix "$npm_global_dir" tree-sitter-cli
     fi
   '';
 }
