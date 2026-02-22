@@ -11,7 +11,7 @@
 
   home.packages = with pkgs; [
     # [시스템 유틸]
-    neofetch htop ripgrep fd unzip lazygit
+    neofetch htop ripgrep fd unzip lazygit lolcat
     lsb-release   # (New) 웰컴 메시지에서 OS 정보 출력용
     xclip xsel wl-clipboard 
     

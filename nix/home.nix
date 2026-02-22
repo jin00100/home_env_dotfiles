@@ -26,7 +26,7 @@
     font-size = 12
 
     # Window
-    window-width = 120
+    window-width = 150
     window-height = 60
     window-decoration = auto
     background-opacity = 0.85
