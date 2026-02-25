@@ -102,6 +102,20 @@ chsh -s $(which zsh)
 | `Ctrl + g` | Tmux Prefix Key | - |
 | `Alt + h/j/k/l` | Navigate between Vim & Tmux | - |
 
+## 🔄 Maintenance
+
+### Update Packages & Configuration
+
+Nix 및 Home Manager에 등록된 모든 패키지를 최신 버전으로 업데이트하려면 다음 명령어를 순서대로 실행하세요.
+
+```bash
+# 1. 패키지 레시피(flake.lock)를 최신 상태로 갱신
+nix flake update
+
+# 2. 업데이트된 내용 적용
+hms
+```
+
 ---
 
 **Note:** Ghostty configuration is managed, but the binary should be installed manually on Native Linux.

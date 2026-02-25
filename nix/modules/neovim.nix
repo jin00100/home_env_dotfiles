@@ -26,12 +26,12 @@
       gitsigns-nvim
       indent-blankline-nvim
       bufferline-nvim
-      sg-nvim           # ast-grep
       mini-nvim         # mini.icons 등
       oil-nvim          # 파일 관리
       comment-nvim      # 주석
       nvim-autopairs    # 괄호 자동완성
       trouble-nvim      # 에러 목록
+      toggleterm-nvim   # 터미널 관리 (Ctrl+/)
       
       # LSP & Completion
       nvim-lspconfig
@@ -124,15 +124,26 @@
         vim.keymap.set("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>")
       end)
 
-      -- [ast-grep (sg.nvim) 설정]
-      safe_require("sg", function(sg)
-        sg.setup({
-          enable_cody = false,    -- Cody AI 비활성화
-          accept_tos = true,      -- 이용약관 자동 동의
-          download_binaries = false, -- Nix에서 관리하므로 자동 다운로드 방지
-          chat = { enabled = false }, -- 채팅 기능 비활성화
-          -- Sourcegraph 인증 무시를 위해 빈 설정을 명시적으로 추가 시도
+      -- [ToggleTerm 설정]
+      safe_require("toggleterm", function(toggleterm)
+        toggleterm.setup({
+          open_mapping = [[<C-/>]], -- Ctrl+/ (일부 터미널에서는 <C-_>)
+          direction = 'float',      -- float, horizontal, vertical 중 선택 가능
+          float_opts = {
+            border = 'curved',
+          }
         })
+        -- Ctrl+/ 와 Ctrl+_ 모두 매핑 (터미널 호환성)
+        vim.keymap.set({'n', 't'}, '<C-/>', '<cmd>ToggleTerm<cr>', {desc = "Toggle terminal"})
+        vim.keymap.set({'n', 't'}, '<C-_>', '<cmd>ToggleTerm<cr>', {desc = "Toggle terminal"})
+        
+        -- 터미널 모드 전용 키맵
+        function _G.set_terminal_keymaps()
+          local opts = {buffer = 0}
+          -- Esc 대신 jk 등으로 터미널 모드 빠져나오기 (선택 사항)
+          vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+        end
+        vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
       end)
 
       -- [Mini.icons 설정]

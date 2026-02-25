@@ -146,7 +146,7 @@ Native Linux와 WSL 환경을 동일하게 관리하도록 통합된 설정이�
     xclip xsel wl-clipboard 
     
     # [Neovim 보조 도구 (LSP/Parsers)]
-    nil ast-grep lua51Packages.jsregexp gopls clang-tools
+    nil ast-grep tree-sitter lua51Packages.jsregexp gopls clang-tools
 
     # 폰트
     maple-mono.NF nerd-fonts.ubuntu-mono 
@@ -191,6 +191,7 @@ Neovim 설정. TokyoNight 테마와 현대적인 플러그인들(oil.nvim, troub
       -- Space+f: 파일 찾기, Space+g: Live Grep
       -- Ctrl+n: Neo-tree 토글
       -- -: Oil.nvim (부모 디렉토리 열기)
+      -- Ctrl+/: Toggle Floating Terminal (ToggleTerm)
     '';
   };
 }

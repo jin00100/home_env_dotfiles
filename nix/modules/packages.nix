@@ -22,6 +22,7 @@
     
     # [Neovim 보조 도구 (LSP/Parsers)]
     # 에디터 경험을 위해 가벼운 서버들만 유지
+    tree-sitter   # Tree-sitter CLI (Fix checkhealth error)
     nil           # Nix Language Server
     ast-grep      # ast-grep CLI
     lua51Packages.jsregexp # Luasnip dependency
