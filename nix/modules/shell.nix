@@ -95,6 +95,9 @@
       # [New] Welcome Message for Tmux Sessions
       # ---------------------------------------------------------
     if [[ -n "$TMUX" ]]; then
+        # 줄바꿈 비활성화 (너비 넘어가면 자름)
+        printf "\e[?7l"
+
         # 아스키 아트 본체 (lolcat 옵션 조절로 파스텔 톤 느낌 구현)
         # -F: 빈도(낮을수록 완만함), -p: 퍼짐(클수록 부드러움)
         cat << 'EOF' | lolcat #-f -F 0.15 -p 1.5
@@ -120,6 +123,9 @@ EOF
 
         echo "\nWelcome to \x1b[94mZsh\x1b[94m, \x1b[1m$USER!\x1b[0m You are on $HOSTNAME."
         echo "Current directory: \x1b[1m$(pwd)\x1b[0m"
+
+        # 줄바꿈 다시 활성화
+        printf "\e[?7h"
       fi      
 
       # ---------------------------------------------------------
