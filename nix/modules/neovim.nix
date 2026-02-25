@@ -32,6 +32,7 @@
       nvim-autopairs    # 괄호 자동완성
       trouble-nvim      # 에러 목록
       toggleterm-nvim   # 터미널 관리 (Ctrl+/)
+      lazygit-nvim      # Lazygit 통합
       
       # LSP & Completion
       nvim-lspconfig
@@ -139,11 +140,17 @@
         
         -- 터미널 모드 전용 키맵
         function _G.set_terminal_keymaps()
-          local opts = {buffer = 0}
-          -- Esc 대신 jk 등으로 터미널 모드 빠져나오기 (선택 사항)
-          vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+          -- 터미널 모드에서 Esc를 눌렀을 때 노멀 모드로 전환하고 싶다면 아래 주석을 해제하세요.
+          -- 하지만 lazygit 등에서 Esc를 써야 할 경우가 많으므로 기본적으로는 매핑하지 않습니다.
+          -- local opts = {buffer = 0}
+          -- vim.keymap.set('t', '<Esc><Esc>', [[<C-\><C-n>]], opts)
         end
         vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
+      end)
+
+      -- [Lazygit 설정]
+      safe_require("lazygit", function(lazygit)
+        vim.keymap.set("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "Open LazyGit" })
       end)
 
       -- [Mini.icons 설정]
