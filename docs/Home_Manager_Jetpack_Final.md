@@ -3,13 +3,13 @@
 ## 1. 개요
 
 이 문서는 Nix Home Manager를 사용하여 리눅스 개발 환경을 구축하는 최종 가이드이다.
-Native Linux(Ubuntu 등)와 WSL 환경을 하나의 통합된 코드베이스로 관리하며, Starship(Jetpack) 테마와 Tmux/Neovim 생산성 도구가 완벽하게 통합되어 있다.
+Native Linux(Ubuntu 등)와 WSL 환경을 하나의 통합된 코드베이스로 관리하며, Starship(Jetpack) 테마와 Zellij/Neovim 생산성 도구가 완벽하게 통합되어 있다.
 
 **주요 기능:**
 - **Core:** Nix Flakes + Home Manager (Modular Structure)
 - **Shell:** Zsh + Starship (Jetpack) + Eza + Zoxide + Bat + FZF + **Direnv** + **fnm (Node Version Manager)**
 - **Editor:** Neovim (Tokyonight, LSP, Treesitter, Telescope, Neo-tree, oil.nvim, etc.)
-- **Terminal:** Tmux (Prefix Ctrl+g, Vim-Navigator, Auto-start)
+- **Terminal:** Zellij (Modern Rust-based Terminal Workspace, Prefix Ctrl+g, Modern UI)
 - **Auto-Install:** Gemini CLI, Tree-sitter CLI (via Nix)
 - **Dev Tools:** gcc, clang, make, cmake, go, gopls
 
@@ -53,9 +53,9 @@ echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
 │       ├── git.nix       # Git 사용자 설정
 │       ├── neovim.nix    # Neovim 플러그인 및 설정
 │       ├── packages.nix  # 시스템 패키지 & 설치 스크립트
-│       ├── shell.nix     # Zsh, Starship, Alias, Tmux 실행 로직, Direnv
+│       ├── shell.nix     # Zsh, Starship, Alias, Zellij 실행 로직, Direnv
 │       ├── starship.toml # Starship 테마 설정 (Jetpack)
-│       └── tmux.nix      # Tmux 옵션 및 키바인딩
+│       └── zellij.nix     # Zellij 옵션 및 키바인딩
 └── .gitignore
 ```
 
@@ -107,7 +107,7 @@ Native Linux와 WSL 환경을 동일하게 관리하도록 통합된 설정이�
     ./modules/shell.nix
     ./modules/packages.nix
     ./modules/neovim.nix
-    ./modules/tmux.nix
+    ./modules/zellij.nix
     ./modules/git.nix
   ];
 
@@ -173,7 +173,6 @@ Neovim 설정. TokyoNight 테마와 현대적인 플러그인들(oil.nvim, troub
 
     plugins = with pkgs.vimPlugins; [
       tokyonight-nvim
-      vim-tmux-navigator 
       which-key-nvim 
       nvim-web-devicons
       lualine-nvim
@@ -187,7 +186,7 @@ Neovim 설정. TokyoNight 테마와 현대적인 플러그인들(oil.nvim, troub
 
     initLua = ''
       -- TokyoNight Theme, LSP, Treesitter, Telescope 설정 포함
-      -- Alt+h/j/k/l: Tmux 및 Vim 창 이동
+      -- Alt+h/j/k/l: Neovim 창 이동 (Zellij Locked 모드와 호환)
       -- Space+f: 파일 찾기, Space+g: Live Grep
       -- Ctrl+n: Neo-tree 토글
       -- -: Oil.nvim (부모 디렉토리 열기)
@@ -198,7 +197,7 @@ Neovim 설정. TokyoNight 테마와 현대적인 플러그인들(oil.nvim, troub
 ```
 
 ### 4.5 ~/home_env_dotfiles/nix/modules/shell.nix
-Zsh, Starship, Eza, Bat, FZF 등 쉘 환경 설정. Direnv, Tmux 자동 실행, 그리고 **fnm 초기화** 로직이 포함됨.
+Zsh, Starship, Eza, Bat, FZF 등 쉘 환경 설정. Direnv, Zellij 자동 실행, 그리고 **fnm 초기화** 로직이 포함됨.
 
 ```nix
 { config, pkgs, lib, ... }:
@@ -211,6 +210,8 @@ Zsh, Starship, Eza, Bat, FZF 등 쉘 환경 설정. Direnv, Tmux 자동 실행, 
     shellAliases = {
       # ls -> eza, cat -> bat 등 매핑
       hms = "home-manager switch --flake ~/home_env_dotfiles/#yongminari";
+      zj = "zellij";
+      zj_shortcuts = "echo ... (도움말 출력) ...";
     };
     initContent = ''
       # fnm 초기화 (Node.js 버전 관리)
@@ -218,29 +219,35 @@ Zsh, Starship, Eza, Bat, FZF 등 쉘 환경 설정. Direnv, Tmux 자동 실행, 
         eval "$(fnm env --use-on-cd --shell zsh)"
       fi
 
-      # ... Tmux 자동 실행 및 Welcome Message ...
+      # ... Zellij 자동 실행 및 Welcome Message ...
+      if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && ! is_vscode; then
+        exec zellij
+      fi
     '';
   };
 }
 ```
 
-### 4.6 ~/home_env_dotfiles/nix/modules/tmux.nix
-Tmux 설정. 클립보드 연동(OSC 52) 및 Vim Navigator 설정이 포함되어 있다. 특히 창 이동 시 Ctrl-j 충돌 방지를 위해 **Alt(M-h,j,k,l)** 키를 사용하도록 설정되어 있다.
+### 4.6 ~/home_env_dotfiles/nix/modules/zellij.nix
+Zellij 설정. 현대적인 UI와 세련된 색감(Modern Gruvbox)을 제공한다. Prefix로 **Ctrl+g**를 사용하여 Locked 모드(Vim 호환 모드)를 전환할 수 있다.
 
 ```nix
 { config, pkgs, ... }:
 
 {
-  programs.tmux = {
+  programs.zellij = {
     enable = true;
-    prefix = "C-g";
-    # ... 마우스, vi 모드, 플러그인 설정 ...
-    extraConfig = ''
-      # 1. Vim-Tmux Navigator Alt (Meta) Key Bindings
-      # Ctrl+j 충돌 방지를 위해 Alt(M-) 키로 변경됨
-      
-      # 2. 터미널 클립보드 프로토콜(OSC 52) 및 복사 설정
-    '';
+    settings = {
+      theme = "modern-gruvbox";
+      default_layout = "default";
+      pane_frames = true;
+      # ... 키바인딩(Alt+h,j,k,l 이동 등) ...
+      keybinds = {
+        normal = { "bind \"Ctrl g\"" = { SwitchToMode = "Locked"; }; };
+        locked = { "bind \"Ctrl g\"" = { SwitchToMode = "Normal"; }; };
+        # shared_except "locked" 에 Alt 키 이동 바인딩 포함
+      };
+    };
   };
 }
 ```
@@ -252,17 +259,20 @@ Tmux 설정. 클립보드 연동(OSC 52) 및 Vim Navigator 설정이 포함되�
 git clone <YOUR_REPO_URL> ~/home_env_dotfiles
 cd ~/home_env_dotfiles
 
-# 2. Home Manager 적용 (Native Linux & WSL 통합)
+# 2. 변경된 파일 Git 인식 (Nix Flake 필수)
+git add .
+
+# 3. Home Manager 적용 (Native Linux & WSL 통합)
 home-manager switch --flake .#yongminari -b backup
 
-# 3. Node.js 설치 (fnm 이용)
+# 4. Node.js 설치 (fnm 이용)
 fnm install --lts
 fnm default lts-latest
 ```
 
 ## 6. 트러블슈팅
 
-- **`fnm` / `node` 명령어를 찾을 수 없음:** 터미널을 재시작하거나 `source ~/.zshrc`를 실행하여 쉘 설정이 반영되었는지 확인한다.
-- **GPU Warning:** "Non-NixOS system..." 경고는 무시해도 되며, 필요 시 경고 메시지에 나온 명령어를 `sudo`로 실행한다.
+- **GPU Warning:** "Non-NixOS system..." 경고는 무시해도 되며, 하드웨어 가속이 필요하면 경고 메시지에 나온 `non-nixos-gpu-setup` 명령어를 `sudo`로 실행한다.
 - **폰트 깨짐:** 터미널(Ghostty 등) 폰트를 `Maple Mono NF` 또는 `UbuntuMono Nerd Font`로 설정했는지 확인한다.
-- **패키지 업데이트:** 새로운 패키지를 추가하거나 업데이트하려면 `nix/modules/packages.nix`를 수정한 후 `hms` (home-manager switch alias)를 실행한다.
+- **Vim 단축키 충돌:** NeoVim 사용 시 `Ctrl+g`를 눌러 Zellij를 **Locked 모드**로 전환하면 NeoVim의 모든 단축키를 그대로 사용할 수 있다.
+- **패키지 업데이트:** `nix flake update` 후 `hms`를 실행한다.

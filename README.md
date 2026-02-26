@@ -12,10 +12,11 @@ This setup supports both **Native Linux** and **WSL** with a single, unified con
   - `cat` -> `bat` (Syntax highlighting)
   - `find` -> `fd` / `grep` -> `ripgrep`
   - `direnv` -> **`direnv` (Nix-direnv integrated)**
-- **💻 Terminal Multiplexer:** **Tmux** pre-configured.
+- **💻 Terminal Multiplexer:** **Zellij** (Modern Rust-based) pre-configured.
   - Auto-start on launch (except VS Code).
-  - Prefix: `Ctrl + g`.
-  - Seamless navigation with Neovim (`Alt + h,j,k,l`).
+  - Prefix: `Ctrl + g` (Locked/Normal toggle).
+  - Modern UI with Gruvbox theme and helpful status bars.
+  - Seamless navigation and integration with Neovim.
 - **📝 Editor:** **Neovim** (IDE-like setup).
   - Lazy loading, Telescope, Neo-tree, Treesitter, LSP (C++, Go, Node).
 - **🤖 AI:** Auto-installation of `@google/gemini-cli`.
@@ -29,10 +30,10 @@ This setup supports both **Native Linux** and **WSL** with a single, unified con
 └── nix
     ├── home.nix          # Main loader
     └── modules
-        ├── shell.nix     # Zsh, Starship, Aliases, Tmux autostart, Direnv
+        ├── shell.nix     # Zsh, Starship, Aliases, Zellij autostart, Direnv
         ├── starship.toml # Jetpack theme config
         ├── neovim.nix    # Editor config
-        ├── tmux.nix      # Multiplexer config
+        ├── zellij.nix    # Modern Multiplexer config
         ├── packages.nix  # System packages & Installation scripts
         └── git.nix       # Git user config
 ```
@@ -94,13 +95,14 @@ chsh -s $(which zsh)
 | :--- | :--- | :--- |
 | `hms` | Apply Nix configuration changes | `home-manager switch ...` |
 | `ll` / `lt` | List files (Grid / Tree view) | `eza ...` |
-| `cd <dir>` | Smart jump to directory | `z <dir>` |
+| `zj` | Start Zellij session | - |
+| `zj_shortcuts` | Show Zellij keybindings summary | - |
 | `vi` / `vim` | Open Neovim | `nvim` |
 | `Space + f` | Find files (Telescope) | - |
 | `Space + g` | Live Grep (Telescope) | - |
 | `Ctrl + n` | Toggle File Explorer | `Neotree` |
-| `Ctrl + g` | Tmux Prefix Key | - |
-| `Alt + h/j/k/l` | Navigate between Vim & Tmux | - |
+| `Ctrl + g` | Zellij Prefix (Lock/Unlock) | - |
+| `Alt + h/j/k/l` | Navigate between Zellij panes | - |
 
 ## 🔄 Maintenance
 
