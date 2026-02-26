@@ -71,6 +71,7 @@
       hms = "home-manager switch --flake ~/home_env_dotfiles/#yongminari";
       vi = "nvim";
       vim = "nvim";
+      zj = "zellij";
     };
 
     initContent = ''
@@ -140,8 +141,9 @@ EOF
         fi
       }
 
-      # 대화형 쉘 + Tmux 밖 + VSCode 아님 -> Tmux 실행
-      if [[ $- == *i* ]] && [[ -z "$TMUX" ]] && ! is_vscode; then
+      # 대화형 쉘 + 멀티플렉서 밖 + VSCode 아님 -> 자동 실행
+      if [[ $- == *i* ]] && [[ -z "$TMUX" ]] && [[ -z "$ZELLIJ" ]] && ! is_vscode; then
+        # Zellij를 기본으로 쓰려면 아래 줄의 tmux를 zellij로 바꾸세요.
         exec tmux
       fi
     '';
