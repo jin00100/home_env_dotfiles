@@ -54,11 +54,8 @@
 
     initContent = lib.mkMerge [
       (lib.mkBefore ''
-        # [Ghostty] Shell Integration (Check if running inside Ghostty AND file exists)
+        # [Ghostty] Shell Integration (ONLY if running INSIDE Ghostty)
         if [[ -n "$GHOSTTY_RESOURCES_DIR" ]] && [[ -f "/usr/share/ghostty/shell-integration/zsh/ghostty-integration" ]]; then
-          source "/usr/share/ghostty/shell-integration/zsh/ghostty-integration"
-        elif [[ -f "/usr/share/ghostty/shell-integration/zsh/ghostty-integration" ]]; then
-          # GHOSTTY_RESOURCES_DIR 변수가 없더라도 파일이 있으면 소싱
           source "/usr/share/ghostty/shell-integration/zsh/ghostty-integration"
         fi
 
