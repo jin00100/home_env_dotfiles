@@ -131,8 +131,12 @@ EOF
           [[ -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" || "$TERM_PROGRAM" == "vscode" ]]
         }
 
-        # 대화형 쉘 + Zellij 밖 + VSCode 아님 + (Zellij 내부 SSH가 아님) -> 자동 실행
-        if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && [[ -z "$ZELLIJ_SKIP_AUTOSTART" ]] && ! is_vscode; then
+        function is_ssh() {
+          [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]]
+        }
+
+        # 대화형 쉘 + Zellij 밖 + VSCode 아님 + SSH 아님 -> 자동 실행
+        if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && [[ -z "$ZELLIJ_SKIP_AUTOSTART" ]] && ! is_vscode && ! is_ssh; then
           # 새로운 세션으로 실행 (복제 방지)
           exec zellij
         fi
