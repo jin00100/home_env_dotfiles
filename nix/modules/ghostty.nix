@@ -16,7 +16,7 @@
 
     # [Cursor] - 사용자가 좋아하는 두꺼운 블록 커서로 고정
     cursor-style = block
-    cursor-blink = true
+    cursor-style-blink = true
 
     # [Shell Integration]
     # 쉘 통합 기능은 켜두되, 커서를 얇게 바꾸지 못하게 막음 (no-cursor)

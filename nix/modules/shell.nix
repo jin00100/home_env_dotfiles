@@ -133,8 +133,8 @@ EOF
 
         # 대화형 쉘 + Zellij 밖 + VSCode 아님 + (Zellij 내부 SSH가 아님) -> 자동 실행
         if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && [[ -z "$ZELLIJ_SKIP_AUTOSTART" ]] && ! is_vscode; then
-          # 세션 자동 생성 및 복구 모드로 실행 (세션명: main)
-          exec zellij attach -c main
+          # 새로운 세션으로 실행 (복제 방지)
+          exec zellij
         fi
       ''
     ];
