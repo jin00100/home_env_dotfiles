@@ -14,6 +14,9 @@
     background-opacity = 0.85
     theme = Dracula
 
+    # [Compatibility] SSH 접속 시 서버가 xterm-ghostty를 모를 수 있으므로 표준으로 설정
+    term = xterm-256color
+
     # [Cursor] - 사용자가 좋아하는 두꺼운 블록 커서로 고정
     cursor-style = block
     cursor-style-blink = true

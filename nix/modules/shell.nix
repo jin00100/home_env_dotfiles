@@ -52,6 +52,14 @@
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
+    # [.zshenv] 가장 먼저 실행되는 설정 (TERM 보정 등)
+    envExtra = ''
+      # [Terminal Compatibility] xterm-ghostty terminfo가 없으면 표준으로 대체
+      if [[ "$TERM" == "xterm-ghostty" ]] && ! infocmp xterm-ghostty &>/dev/null; then
+        export TERM=xterm-256color
+      fi
+    '';
+
     initContent = lib.mkMerge [
       (lib.mkBefore ''
         # [Ghostty] Shell Integration (ONLY if running INSIDE Ghostty)
@@ -73,9 +81,11 @@
 
         export PATH=$HOME/.local/bin:$PATH
 
-        # History Search 키바인딩
-        bindkey '^[[A' history-substring-search-up
-        bindkey '^[[B' history-substring-search-down
+        # [Key Bindings] 더 넓은 터미널 호환성을 위해 바인딩 보강
+        bindkey '^[[A' history-substring-search-up    # Arrow Up
+        bindkey '^[[B' history-substring-search-down  # Arrow Down
+        bindkey '^[OA' history-substring-search-up    # Arrow Up (Application Mode)
+        bindkey '^[OB' history-substring-search-down  # Arrow Down (Application Mode)
 
         # [New] Pyenv 초기화 (설치되어 있을 경우에만)
         if command -v pyenv &>/dev/null; then
