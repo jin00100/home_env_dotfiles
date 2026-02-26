@@ -72,6 +72,22 @@
       vi = "nvim";
       vim = "nvim";
       zj = "zellij";
+      zj_shortcuts = ''echo -e "\033[1;34m=== Zellij Custom Shortcuts (Tmux Style) ===\033[0m" && \
+                        echo -e "\033[1;33m[ Quick Actions (Alt Key) ]\033[0m" && \
+                        echo "  Alt + n       : New Pane (Right)" && \
+                        echo "  Alt + h/j/k/l : Move focus (Left/Down/Up/Right)" && \
+                        echo "  Alt + i/o     : Move Tab (Prev/Next)" && \
+                        echo "  Alt + =/-     : Resize Pane (Increase/Decrease)" && \
+                        echo -e "\033[1;33m[ Core Modes (Prefix) ]\033[0m" && \
+                        echo "  Ctrl + g      : LOCKED Mode (Essential for NeoVim!)" && \
+                        echo "  Ctrl + s      : SCROLL/COPY Mode (Like tmux prefix + [)" && \
+                        echo "                  -> v: Select, y/Enter: Copy" && \
+                        echo "  Ctrl + p      : PANE Mode (Split, Resize, etc.)" && \
+                        echo "  Ctrl + t      : TAB Mode (New, Rename, etc.)" && \
+                        echo "  Ctrl + n      : RESIZE Mode" && \
+                        echo "  Ctrl + o      : SESSION Mode" && \
+                        echo "  Ctrl + q      : QUIT Zellij" && \
+                        echo -e "\033[1;32mTip: Bottom bar changes based on these modes!\033[0m" '';
     };
 
     initContent = ''
@@ -93,58 +109,53 @@
       fi
 
       # ---------------------------------------------------------
-      # [New] Welcome Message for Tmux Sessions
+      # [New] Welcome Message for Zellij Sessions
       # ---------------------------------------------------------
-    if [[ -n "$TMUX" ]]; then
-        # 줄바꿈 비활성화 (너비 넘어가면 자름)
+      if [[ -n "$ZELLIJ" ]]; then
+        # 줄바꿈 비활성화
         printf "\e[?7l"
 
-        # 아스키 아트 본체 (lolcat 옵션 조절로 파스텔 톤 느낌 구현)
-        # -F: 빈도(낮을수록 완만함), -p: 퍼짐(클수록 부드러움)
-        cat << 'EOF' | lolcat #-f -F 0.15 -p 1.5
+        cat << 'EOF' | lolcat 
                                                                                                                
- ███        █████ █████   █████    █████   ████   ████████  █████   █████ ████ █████   ████   ██████   ████████   ████
-░░░███     ░░███ ░░███  ███░░░███ ░░█████ ░░██   ███░░░░███░░█████ █████ ░░██ ░░█████ ░░██   ██░░░░██ ░░██░░░░██ ░░██ 
-  ░░░███    ░░███ ███  ███   ░░███ ░██░███ ░██  ███    ░░░  ░██░█████░██  ░██  ░██░███ ░██  ░██   ░██  ░██   ░██  ░██ 
-    ░░░███   ░░█████  ░███    ░███ ░██░░███░██ ░███         ░██░░███ ░██  ░██  ░██░░███░██  ░████████  ░███████   ░██ 
-     ███░     ░░███   ░███    ░███ ░██ ░░█████ ░███   █████ ░██ ░░░  ░██  ░██  ░██ ░░█████  ░██░░░░██  ░██░░░░██  ░██ 
-   ███░        ░███   ░░███   ███  ░██  ░░████ ░░███ ░░███  ░██      ░██  ░██  ░██  ░░████  ░██   ░██  ░██   ░██  ░██ 
- ███░          █████   ░░░█████░   ████  ░░████ ░░████████  ████     ████ ████ ████  ░░████ ████  ████ ████  ████ ████
-░░░           ░░░░░      ░░░░░    ░░░░    ░░░░   ░░░░░░░░░  ░░░░     ░░░░ ░░░░ ░░░░    ░░░░ ░░░░  ░░░░ ░░░░  ░░░░ ░░░░ 
-                                                                                                                                        
+
+ ███          █████ █████                              ██████   ██████  ███                                  ███ 
+░░░███       ░░███ ░░███                              ░░██████ ██████  ░░░                                  ░░░  
+  ░░░███      ░░███ ███    ██████  ████████    ███████ ░███░█████░███  ████  ████████    ██████   ████████  ████ 
+    ░░░███     ░░█████    ███░░███░░███░░███  ███░░███ ░███░░███ ░███ ░░███ ░░███░░███  ░░░░░███ ░░███░░███░░███ 
+     ███░       ░░███    ░███ ░███ ░███ ░███ ░███ ░███ ░███ ░░░  ░███  ░███  ░███ ░███   ███████  ░███ ░░░  ░███ 
+   ███░          ░███    ░███ ░███ ░███ ░███ ░███ ░███ ░███      ░███  ░███  ░███ ░███  ███░░███  ░███      ░███ 
+ ███░            █████   ░░██████  ████ █████░░███████ █████     █████ █████ ████ █████░░████████ █████     █████
+░░░             ░░░░░     ░░░░░░  ░░░░ ░░░░░  ░░░░░███░░░░░     ░░░░░ ░░░░░ ░░░░ ░░░░░  ░░░░░░░░ ░░░░░     ░░░░░ 
+                                              ███ ░███                                                           
+                                             ░░██████                                                            
+                                              ░░░░░░                                                                                                                                                                                                     
 EOF
 
-        # 시스템 정보 출력 (ANSI 색상 적용)
+        # 시스템 정보 출력
         echo "\x1b[1;31m $(lsb_release -d 2>/dev/null | cut -f2 || echo "Linux")"
         echo "\x1b[1;33m HOST      : $(uname -n)"
+        echo "\x1b[1;32m SESSION   : Zellij (Modern Terminal Workspace)"
         echo "\x1b[1;34m Kernel    : $(uname -r)"
         echo "\x1b[1;35m Date      : $(date +'%Y-%m-%d %H:%M:%S')"
         echo "\x1b[1;36m Shell     : $(zsh --version | awk '{print $1, $2}')"
         echo "\x1b[1;37m Who       : $(whoami)\x1b[0m"
 
-        echo "\nWelcome to \x1b[94mZsh\x1b[94m, \x1b[1m$USER!\x1b[0m You are on $HOSTNAME."
-        echo "Current directory: \x1b[1m$(pwd)\x1b[0m"
-
+        echo "\nWelcome to \x1b[94mZsh\x1b[94m, \x1b[1m$USER!\x1b[0m"
+        
         # 줄바꿈 다시 활성화
         printf "\e[?7h"
       fi      
 
       # ---------------------------------------------------------
-      # [New] Tmux 자동 실행 (VS Code 감지 강화)
+      # [New] Zellij 자동 실행
       # ---------------------------------------------------------
-      # VS Code 내부인지 확인하는 함수
       function is_vscode() {
-        if [[ -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" || "$TERM_PROGRAM" == "vscode" ]]; then
-          return 0
-        else
-          return 1
-        fi
+        [[ -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" || "$TERM_PROGRAM" == "vscode" ]]
       }
 
-      # 대화형 쉘 + 멀티플렉서 밖 + VSCode 아님 -> 자동 실행
-      if [[ $- == *i* ]] && [[ -z "$TMUX" ]] && [[ -z "$ZELLIJ" ]] && ! is_vscode; then
-        # Zellij를 기본으로 쓰려면 아래 줄의 tmux를 zellij로 바꾸세요.
-        exec tmux
+      # 대화형 쉘 + Zellij 밖 + VSCode 아님 -> 자동 실행
+      if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && ! is_vscode; then
+        exec zellij
       fi
     '';
   };

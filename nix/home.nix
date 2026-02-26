@@ -11,7 +11,6 @@
     ./modules/shell.nix
     ./modules/packages.nix
     ./modules/neovim.nix
-    ./modules/tmux.nix
     ./modules/zellij.nix
     ./modules/git.nix
   ];

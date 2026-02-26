@@ -14,7 +14,6 @@
     # 1. 플러그인 목록
     plugins = with pkgs.vimPlugins; [
       tokyonight-nvim
-      vim-tmux-navigator 
       which-key-nvim 
       nvim-web-devicons
       lualine-nvim
@@ -64,12 +63,11 @@
       vim.opt.laststatus = 3        -- 전역 상태줄 (Global Statusline)
       vim.opt.cmdheight = 1         -- 커맨드 라인 높이 유지
 
-      -- [Vim Tmux Navigator]
-      vim.g.tmux_navigator_no_mappings = 1
-      vim.keymap.set('n', '<M-h>', '<cmd>TmuxNavigateLeft<cr>')
-      vim.keymap.set('n', '<M-j>', '<cmd>TmuxNavigateDown<cr>')
-      vim.keymap.set('n', '<M-k>', '<cmd>TmuxNavigateUp<cr>')
-      vim.keymap.set('n', '<M-l>', '<cmd>TmuxNavigateRight<cr>')
+      -- [Navigation]
+      vim.keymap.set('n', '<M-h>', '<C-w>h')
+      vim.keymap.set('n', '<M-j>', '<C-w>j')
+      vim.keymap.set('n', '<M-k>', '<C-w>k')
+      vim.keymap.set('n', '<M-l>', '<C-w>l')
 
       -- [테마 설정]
       safe_require("tokyonight", function(tokyonight)

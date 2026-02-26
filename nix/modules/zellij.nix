@@ -6,15 +6,14 @@
     
     settings = {
       theme = "dracula";
-      default_layout = "compact";
-      pane_frames = false;
+      # [변경] 처음 배우실 때는 'default' 레이아웃이 도움말이 잘 나와서 훨씬 좋습니다.
+      default_layout = "default";
+      # [변경] 패널 테두리를 켜면 각 패널의 상태(Locked 등)를 확인하기 쉽습니다.
+      pane_frames = true;
       
-      # [Keybindings] tmux(C-g)와 유사한 경험 제공
       keybinds = {
-        unbind = [ "Ctrl b" "Ctrl h" ]; # 기본 바인딩 해제
+        unbind = [ "Ctrl b" "Ctrl h" ];
         
-        # Tmux와 동일하게 Ctrl-g를 메인 단축키로 사용 
-        # Zellij에서는 'locked' 모드를 통해 Neovim과 키 충돌을 방지합니다.
         normal = {
           "bind \"Ctrl g\"" = { SwitchToMode = "Locked"; };
         };
@@ -22,7 +21,6 @@
           "bind \"Ctrl g\"" = { SwitchToMode = "Normal"; };
         };
 
-        # 어느 모드에서나 작동하는 공통 단축키 (Alt 사용)
         shared_except = {
           _args = [ "locked" ];
           "bind \"Alt h\"" = { MoveFocusOrTab = "Left"; };
@@ -37,7 +35,6 @@
         };
       };
 
-      # 테마 설정 (Dracula)
       themes = {
         dracula = {
           fg = [ 248 248 242 ];
@@ -54,7 +51,6 @@
         };
       };
 
-      # 마우스 지원 및 복사 설정
       mouse_mode = true;
       copy_on_select = true;
       copy_command = if config.targets.genericLinux.enable then "wl-copy" else "";
