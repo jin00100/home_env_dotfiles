@@ -55,7 +55,9 @@
     # [.zshenv] 가장 먼저 실행되는 설정 (TERM 보정 등)
     envExtra = ''
       # [Terminal Compatibility] xterm-ghostty terminfo가 없으면 표준으로 대체
-      if [[ "$TERM" == "xterm-ghostty" ]] && ! infocmp xterm-ghostty &>/dev/null; then
+      if [[ "$TERM" == "xterm-ghostty" ]] && ! command -v infocmp &>/dev/null; then
+        export TERM=xterm-256color
+      elif [[ "$TERM" == "xterm-ghostty" ]] && ! infocmp xterm-ghostty &>/dev/null; then
         export TERM=xterm-256color
       fi
     '';
@@ -63,15 +65,24 @@
     initContent = lib.mkMerge [
       (lib.mkBefore ''
         # [Ghostty] Shell Integration (ONLY if running INSIDE Ghostty)
-        if [[ -n "$GHOSTTY_RESOURCES_DIR" ]] && [[ -f "/usr/share/ghostty/shell-integration/zsh/ghostty-integration" ]]; then
-          source "/usr/share/ghostty/shell-integration/zsh/ghostty-integration"
+        if [[ -n "$GHOSTTY_RESOURCES_DIR" ]]; then
+          if [[ -f "/usr/share/ghostty/shell-integration/zsh/ghostty-integration" ]]; then
+            source "/usr/share/ghostty/shell-integration/zsh/ghostty-integration"
+          elif [[ -f "$HOME/.nix-profile/share/ghostty/shell-integration/zsh/ghostty-integration" ]]; then
+            source "$HOME/.nix-profile/share/ghostty/shell-integration/zsh/ghostty-integration"
+          fi
         fi
 
         if [[ "$TERM" == "zellij" ]]; then
-          # 접속한 쪽이 Zellij면, 호환성을 위해 TERM을 바꾸고 자동실행 건너뛰기 플래그 설정
           export TERM=xterm-256color
           export ZELLIJ_SKIP_AUTOSTART=true
         fi
+
+        # [SSH Detection] More robust check
+        function is_ssh() {
+          [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]] || \
+          [[ "$(ps -o comm= -p $PPID 2>/dev/null)" == "sshd" ]]
+        }
       '')
       ''
         # [추가] fnm 초기화 코드 (fnm이 설치되어 있다면 실행)
@@ -97,10 +108,15 @@
         # [New] Welcome Message for Zellij Sessions
         # ---------------------------------------------------------
         if [[ -n "$ZELLIJ" ]]; then
-          # 줄바꿈 비활성화
-          printf "\e[?7l"
+          # Fast OS detection
+          local os_name="Linux"
+          if [[ -f /etc/os-release ]]; then
+            os_name=$(grep PRETTY_NAME /etc/os-release | cut -d '"' -f2)
+          fi
 
-          cat << 'EOF' | lolcat 
+          # Only use lolcat if available
+          if command -v lolcat &>/dev/null; then
+            cat << 'EOF' | lolcat 
                                                                                                                  
 
    ███          █████ █████                              ██████   ██████  ███                                  ███ 
@@ -115,9 +131,9 @@
                                                ░░██████                                                            
                                                 ░░░░░░                                                                                                                                                                                                     
 EOF
+          fi
 
-          # 시스템 정보 출력
-          echo "\x1b[1;31m $(lsb_release -d 2>/dev/null | cut -f2 || echo "Linux")"
+          echo "\x1b[1;31m $os_name"
           echo "\x1b[1;33m HOST      : $(uname -n)"
           echo "\x1b[1;32m SESSION   : Zellij (Modern Terminal Workspace)"
           echo "\x1b[1;34m Kernel    : $(uname -r)"
@@ -126,9 +142,6 @@ EOF
           echo "\x1b[1;37m Who       : $(whoami)\x1b[0m"
 
           echo "\nWelcome to \x1b[94mZsh\x1b[94m, \x1b[1m$USER!\x1b[0m"
-          
-          # 줄바꿈 다시 활성화
-          printf "\e[?7h"
         fi      
 
         # ---------------------------------------------------------
@@ -136,10 +149,6 @@ EOF
         # ---------------------------------------------------------
         function is_vscode() {
           [[ -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" || "$TERM_PROGRAM" == "vscode" ]]
-        }
-
-        function is_ssh() {
-          [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]]
         }
 
         # 대화형 쉘 + Zellij 밖 + VSCode 아님 + SSH 아님 -> 자동 실행
