@@ -35,6 +35,5 @@
     monaspace
     nerd-fonts.jetbrains-mono
     fnm
-    gemini-cli
   ];
 }

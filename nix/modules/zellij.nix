@@ -21,6 +21,14 @@
           "bind \"Ctrl g\"" = { SwitchToMode = "Normal"; };
         };
 
+        tab = {
+          unbind = [ "x" ];
+          "bind \"Ctrl x\"" = {
+            CloseTab = { };
+            SwitchToMode = "Normal";
+          };
+        };
+
         shared_except = {
           _args = [ "locked" ];
           "bind \"Alt h\"" = { MoveFocusOrTab = "Left"; };
