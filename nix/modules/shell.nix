@@ -212,7 +212,7 @@ EOF
       # [New] 클립보드 복사 Alias
       tocb = "xclip -selection clipboard";
 
-      hms = "home-manager switch --flake ~/home_env_dotfiles/#yongminari";
+      hms = "home-manager switch --flake ~/home_env_dotfiles/#jin";
       vi = "nvim";
       vim = "nvim";
       zj = "zellij";

@@ -2,8 +2,8 @@
 
 {
   # [사용자 정보]
-  home.username = "yongminari";
-  home.homeDirectory = "/home/yongminari";
+  home.username = "jin";
+  home.homeDirectory = "/home/jin";
   home.stateVersion = "25.11"; 
 
   # [모듈 로드] 기능별 파일들을 여기서 불러옴
