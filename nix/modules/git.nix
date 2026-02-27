@@ -4,7 +4,7 @@
   programs.git = {
     enable = true;
     settings = {
-      user = { name = "yongminari"; email = "easyid21c@gmail.com"; };
+      user = { name = "jin"; email = "jin10190220@gmail.com"; };
       init.defaultBranch = "main";
     };
   };

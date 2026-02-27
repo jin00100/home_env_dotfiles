@@ -1,6 +1,6 @@
 # 🚀 Dotfiles (Nix Home Manager)
 
-**yongminari**'s declarative development environment configuration managed by **Nix Home Manager**.
+**jin**'s declarative development environment configuration managed by **Nix Home Manager**.
 This setup supports both **Native Linux** and **WSL** with a single, unified configuration, ensuring a consistent and high-performance workflow.
 
 ## ✨ Features
@@ -61,7 +61,7 @@ cd ~/home_env_dotfiles
 
 ```bash
 # Apply for both Native Linux and WSL
-nix run home-manager/master -- switch --flake .#yongminari -b backup
+nix run home-manager/master -- switch --flake .#jin -b backup
 ```
 
 ### 4. Node.js Setup (via fnm)

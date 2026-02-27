@@ -1,5 +1,5 @@
 {
-  description = "Home Manager configuration for yongminari";
+  description = "Home Manager configuration for jin";
 
   inputs = {
     # Nixpkgs (Unstable - 최신 패키지)
@@ -19,7 +19,7 @@
     in {
       homeConfigurations = {
         # 1. Native Linux & WSL (Unified)
-        "yongminari" = home-manager.lib.homeManagerConfiguration {
+        "jin" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           modules = [ ./nix/home.nix ];
         };

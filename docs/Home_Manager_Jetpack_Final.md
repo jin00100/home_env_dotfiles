@@ -66,7 +66,7 @@ Native Linux와 WSL 환경을 동일하게 관리하도록 통합된 설정이�
 
 ```nix
 {
-  description = "Home Manager configuration for yongminari";
+  description = "Home Manager configuration for jin";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -83,7 +83,7 @@ Native Linux와 WSL 환경을 동일하게 관리하도록 통합된 설정이�
     in {
       homeConfigurations = {
         # Native Linux & WSL (Unified)
-        "yongminari" = home-manager.lib.homeManagerConfiguration {
+        "jin" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           modules = [ ./nix/home.nix ];
         };
@@ -99,8 +99,8 @@ Native Linux와 WSL 환경을 동일하게 관리하도록 통합된 설정이�
 { config, pkgs, ... }:
 
 {
-  home.username = "yongminari";
-  home.homeDirectory = "/home/yongminari";
+  home.username = "jin";
+  home.homeDirectory = "/home/jin";
   home.stateVersion = "25.11"; 
 
   imports = [
@@ -209,7 +209,7 @@ Zsh, Starship, Eza, Bat, FZF 등 쉘 환경 설정. Direnv, Zellij 자동 실행
     enable = true;
     shellAliases = {
       # ls -> eza, cat -> bat 등 매핑
-      hms = "home-manager switch --flake ~/home_env_dotfiles/#yongminari";
+      hms = "home-manager switch --flake ~/home_env_dotfiles/#jin";
       zj = "zellij";
       zj_shortcuts = "echo ... (도움말 출력) ...";
     };
@@ -263,7 +263,7 @@ cd ~/home_env_dotfiles
 git add .
 
 # 3. Home Manager 적용 (Native Linux & WSL 통합)
-home-manager switch --flake .#yongminari -b backup
+home-manager switch --flake .#jin -b backup
 
 # 4. Node.js 설치 (fnm 이용)
 fnm install --lts
