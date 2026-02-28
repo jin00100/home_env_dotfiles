@@ -16,10 +16,21 @@ CURRENT_HOME=$HOME
 
 echo -e "${GREEN}Detected user:${NC} $CURRENT_USER at $CURRENT_HOME"
 
-# 2. Nix 패키지 매니저 설치 확인
+# 2. 시스템에 Nix가 설치되어 있지만 환경변수에 등록되지 않은 경우를 대비하여 먼저 로드 시도
+if [ -e "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh" ]; then
+    source "/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh"
+elif [ -e "$CURRENT_HOME/.nix-profile/etc/profile.d/nix.sh" ]; then
+    source "$CURRENT_HOME/.nix-profile/etc/profile.d/nix.sh"
+fi
+export PATH="/nix/var/nix/profiles/default/bin:$CURRENT_HOME/.nix-profile/bin:$PATH"
+
+# 3. Nix 패키지 매니저 설치 확인
 if ! command -v nix &> /dev/null; then
+    echo -e "${YELLOW}🧹 Cleaning up previous failed Nix installation residues (if any)...${NC}"
+    sudo find /etc ~/ -name "*.backup-before-nix" -type f -delete 2>/dev/null || true
+
     echo -e "${YELLOW}📦 Nix is not installed. Installing Nix...${NC}"
-    sh <(curl -L https://nixos.org/nix/install) --daemon
+    sh <(curl -L https://nixos.org/nix/install) --daemon --yes
     
     echo -e "${YELLOW}⚙️ Configuring Nix experimental features (flakes)...${NC}"
     mkdir -p ~/.config/nix

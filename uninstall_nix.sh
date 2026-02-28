@@ -60,6 +60,9 @@ for file in /etc/bashrc /etc/profile /etc/bash.bashrc /etc/zshrc; do
     fi
 done
 
+echo "🧹 Forcefully sweeping any stubborn Nix backup residues..."
+sudo find /etc ~/ -name "*.backup-before-nix" -type f -delete 2>/dev/null || true
+
 echo ""
 echo "✅ Uninstallation complete!"
 echo "You can now safely attempt to reinstall Nix from scratch."

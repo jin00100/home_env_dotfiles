@@ -47,15 +47,17 @@ This project includes an all-in-one setup script (`install.sh`) that will automa
 4. Auto-install Node.js via `fnm`.
 5. Set `zsh` as your default shell.
 
-### Option 1: Quick Install (via curl)
-If you haven't cloned this repository yet, you can run this single command to clone and install everything:
+### Option 1: Quick Install
+If you haven't cloned this repository yet, run these commands to clone and install everything:
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/home_env_dotfiles.git ~/home_env_dotfiles
+git clone https://github.com/jin00100/home_env_dotfiles.git ~/home_env_dotfiles
 cd ~/home_env_dotfiles
 chmod +x install.sh
 ./install.sh
 ```
+
+*(Note: If Nix is not already installed on your system, the script will install it for you and may pause, asking you to restart your terminal. Simply restart the terminal, then run `./install.sh` again to finish the setup.)*
 
 ### Option 2: Local Install
 If you have already cloned the repository manually:
