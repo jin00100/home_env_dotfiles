@@ -40,53 +40,30 @@ This setup supports both **Native Linux** and **WSL** with a single, unified con
 
 ## 🚀 Installation
 
-### 1. Install Nix & Enable Flakes
+This project includes an all-in-one setup script (`install.sh`) that will automatically:
+1. Install Nix Package Manager and enable Flakes.
+2. Configure variables based on your username (`jin`, etc.).
+3. Download and apply the `zsh`, `zellij`, and `neovim` configurations.
+4. Auto-install Node.js via `fnm`.
+5. Set `zsh` as your default shell.
+
+### Option 1: Quick Install (via curl)
+If you haven't cloned this repository yet, you can run this single command to clone and install everything:
 
 ```bash
-sh <(curl -L https://nixos.org/nix/install) --daemon
-# Restart terminal, then:
-mkdir -p ~/.config/nix
-echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
-```
-
-### 2. Clone & Setup
-
-```bash
-# Clone this repo to ~/home_env_dotfiles
-git clone <YOUR_REPO_URL> ~/home_env_dotfiles
+git clone https://github.com/YOUR_GITHUB_USERNAME/home_env_dotfiles.git ~/home_env_dotfiles
 cd ~/home_env_dotfiles
+chmod +x install.sh
+./install.sh
 ```
 
-### 3. Apply Configuration
+### Option 2: Local Install
+If you have already cloned the repository manually:
 
 ```bash
-# Apply for both Native Linux and WSL
-nix run home-manager/master -- switch --flake .#jin -b backup
-```
-
-### 4. Node.js Setup (via fnm)
-
-이 설정은 Node.js 관리를 위해 `fnm`을 포함하고 있습니다. 최초 설치 후 다음 명령어를 통해 Node.js를 설치하세요.
-
-```bash
-fnm install --lts
-fnm default lts-latest
-```
-
-### 5. Set Zsh as Default Shell (chsh)
-
-Nix로 설치된 Zsh는 경로가 다르기 때문에 시스템이 기본 셸로 바로 인식하지 못할 수 있습니다. 다음 단계를 따라 전환하세요.
-
-```bash
-# 1. Nix Zsh 경로 확인
-which zsh
-# 보통 ~/.nix-profile/bin/zsh
-
-# 2. 유효한 셸 목록에 추가 (Root 권한 필요)
-sudo sh -c "echo $(which zsh) >> /etc/shells"
-
-# 3. 기본 셸 변경
-chsh -s $(which zsh)
+cd ~/home_env_dotfiles
+chmod +x install.sh
+./install.sh
 ```
 
 ## ⌨️ Cheat Sheet
