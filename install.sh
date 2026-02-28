@@ -50,8 +50,19 @@ else
 fi
 
 # 3. Flake 및 설정 파일 내 유저명 동적 업데이트
-echo -e "${BLUE}🔄 Updating configurations for current user...${NC}"
-# 변수 치환 정규식 처리
+echo -e "${BLUE}🔄 Updating configurations for current user and architecture...${NC}"
+
+# 시스템 아키텍처 (x86_64 vs aarch64/ARM64) 감지하여 flake.nix의 체제 구성 동적 변경
+ARCH=$(uname -m)
+if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+    echo -e "${GREEN}Detected ARM64/aarch64 architecture! Adjusting flake.nix...${NC}"
+    sed -i -E 's|system = "[a-zA-Z0-9_-]+";|system = "aarch64-linux";|g' flake.nix
+else
+    echo -e "${GREEN}Detected x86_64 architecture! Adjusting flake.nix...${NC}"
+    sed -i -E 's|system = "[a-zA-Z0-9_-]+";|system = "x86_64-linux";|g' flake.nix
+fi
+
+# 변수 치환 정규식 처리 (유저명 치환)
 sed -i -E "s|\"[a-zA-Z0-9_-]+\" = home-manager.lib.homeManagerConfiguration|\"$CURRENT_USER\" = home-manager.lib.homeManagerConfiguration|g" flake.nix
 sed -i -E "s|home.username = \"[^\"]*\";|home.username = \"$CURRENT_USER\";|g" nix/home.nix
 sed -i -E "s|home.homeDirectory = \"[^\"]*\";|home.homeDirectory = \"$CURRENT_HOME\";|g" nix/home.nix

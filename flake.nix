@@ -14,11 +14,12 @@
 
   outputs = { self, nixpkgs, home-manager, ... }:
     let
+      # system var is dynamically updated by install.sh based on the host architecture
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
     in {
       homeConfigurations = {
-        # 1. Native Linux & WSL (Unified)
+        # Native Linux & WSL (Unified)
         "jin" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
           modules = [ ./nix/home.nix ];
