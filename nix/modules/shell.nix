@@ -1,14 +1,14 @@
 { config, pkgs, lib, ... }:
 
 {
-  # 1. Starship 프롬프트
+  # 1. Starship Prompt
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
     settings = lib.importTOML ./starship.toml;
   };
 
-  # 2. Eza (ls 대체)
+  # 2. Eza (ls alternative)
   programs.eza = {
     enable = true;
     enableZshIntegration = true;
@@ -16,18 +16,18 @@
     git = true;
   };
 
-  # 3. Zoxide (cd 대체)
+  # 3. Zoxide (cd alternative)
   programs.zoxide = {
     enable = true;
     enableZshIntegration = true;
     options = [ "--cmd cd" ];
   };
 
-  # 4. [New] Bat (cat 대체 - Syntax Highlight)
+  # 4. [New] Bat (cat alternative - Syntax Highlight)
   programs.bat = {
     enable = true;
     config = {
-      theme = "Dracula"; # 원하는 테마 설정 가능
+      theme = "Dracula"; # You can set your preferred theme here
     };
   };
 
@@ -35,7 +35,7 @@
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
-    # Ctrl+R(히스토리), Ctrl+T(파일찾기) 활성화
+    # Enables Ctrl+R (History) and Ctrl+T (File Search)
   };
 
   # 6. [New] Direnv
@@ -45,16 +45,16 @@
     nix-direnv.enable = true;
   };
 
-  # 7. Zsh 설정
+  # 7. Zsh Configuration
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
 
-    # [.zshenv] 가장 먼저 실행되는 설정 (TERM 보정 등)
+    # [.zshenv] Loaded first (Terminal compatibility fallbacks)
     envExtra = ''
-      # [Terminal Compatibility] xterm-ghostty terminfo가 없으면 표준으로 대체
+      # [Terminal Compatibility] Fallback to standard if xterm-ghostty terminfo is missing
       if [[ "$TERM" == "xterm-ghostty" ]] && ! command -v infocmp &>/dev/null; then
         export TERM=xterm-256color
       elif [[ "$TERM" == "xterm-ghostty" ]] && ! infocmp xterm-ghostty &>/dev/null; then
@@ -85,20 +85,20 @@
         }
       '')
       ''
-        # [추가] fnm 초기화 코드 (fnm이 설치되어 있다면 실행)
+        # [Added] fnm initialization code
         if command -v fnm &>/dev/null; then
           eval "$(fnm env --use-on-cd --shell zsh)"
         fi
 
         export PATH=$HOME/.local/bin:$PATH
 
-        # [Key Bindings] 더 넓은 터미널 호환성을 위해 바인딩 보강
+        # [Key Bindings] Enhancing bindings for broader terminal compatibility
         bindkey '^[[A' history-substring-search-up    # Arrow Up
         bindkey '^[[B' history-substring-search-down  # Arrow Down
         bindkey '^[OA' history-substring-search-up    # Arrow Up (Application Mode)
         bindkey '^[OB' history-substring-search-down  # Arrow Down (Application Mode)
 
-        # [New] Pyenv 초기화 (설치되어 있을 경우에만)
+        # [New] Pyenv initialization
         if command -v pyenv &>/dev/null; then
           eval "$(pyenv init -)"
           eval "$(pyenv virtualenv-init -)"
@@ -108,7 +108,7 @@
         # [New] Welcome Message for Zellij Sessions or SSH
         # ---------------------------------------------------------
         if [[ -n "$ZELLIJ" ]] || is_ssh; then
-          # 줄바꿈 비활성화
+          # Disable line wrapping
           printf "\e[?7l"
 
           # Fast OS detection
@@ -169,20 +169,20 @@ EOF
 
           echo "\nWelcome to \x1b[94mZsh\x1b[94m, \x1b[1m$USER!\x1b[0m"
 
-          # 줄바꿈 다시 활성화
+          # Re-enable line wrapping
           printf "\e[?7h"
         fi      
 
         # ---------------------------------------------------------
-        # [New] Zellij 자동 실행
+        # [New] Zellij Autostart
         # ---------------------------------------------------------
         function is_vscode() {
           [[ -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" || "$TERM_PROGRAM" == "vscode" ]]
         }
 
-        # 대화형 쉘 + Zellij 밖 + VSCode 아님 + SSH 아님 -> 자동 실행
+        # Interactive Shell + Outside Zellij + Not VSCode + Not SSH -> Autostart
         if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && [[ -z "$ZELLIJ_SKIP_AUTOSTART" ]] && ! is_vscode && ! is_ssh; then
-          # 새로운 세션으로 실행 (복제 방지)
+          # Start a new session (prevents duplication)
           exec zellij
         fi
       ''
@@ -198,13 +198,13 @@ EOF
       ll = "eza -l --icons --git -a";
       lt = "eza --tree --level=2 --long --icons --git";
       
-      # [New] cat -> bat 매핑
+      # [New] cat -> bat mapping
       cat = "bat";
       
-      # [New] 클립보드 복사 Alias
+      # [New] Clipboard copy alias
       tocb = "xclip -selection clipboard";
 
-      hms = "home-manager switch --flake ~/home_env_dotfiles/#jin";
+      hms = "home-manager switch --flake ~/home_env_dotfiles/#default --impure";
       vi = "nvim";
       vim = "nvim";
       zj = "zellij";

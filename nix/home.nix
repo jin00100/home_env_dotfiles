@@ -1,12 +1,12 @@
-{ config, pkgs, ... }:
+{ config, pkgs, username, homeDirectory, ... }:
 
 {
-  # [사용자 정보]
-  home.username = "jin";
-  home.homeDirectory = "/home/jin";
+  # [User Info - Dynamically passing from flake.nix]
+  home.username = username;
+  home.homeDirectory = homeDirectory;
   home.stateVersion = "25.11"; 
 
-  # [모듈 로드] 기능별 파일들을 여기서 불러옴
+  # [Module Loader] Load feature-specific files
   imports = [
     ./modules/shell.nix
     ./modules/packages.nix
@@ -18,6 +18,13 @@
 
   targets.genericLinux.enable = true;
   fonts.fontconfig.enable = true;
+
+  # [Auto GC] Automatically clean up unused Nix histories weekly
+  nix.gc = {
+    automatic = true;
+    frequency = "weekly";
+    options = "--delete-older-than 7d";
+  };
 
   programs.home-manager.enable = true;
 }

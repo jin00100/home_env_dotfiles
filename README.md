@@ -15,7 +15,7 @@ This setup supports both **Native Linux** and **WSL** with a single, unified con
 - **💻 Terminal Multiplexer:** **Zellij** (Modern Rust-based) pre-configured.
   - Auto-start on launch (except VS Code).
   - Prefix: `Ctrl + g` (Locked/Normal toggle).
-  - Modern UI with Gruvbox theme and helpful status bars.
+  - Modern UI with Custom Cyber-Blue theme and helpful status bars.
   - Seamless navigation and integration with Neovim.
 - **📝 Editor:** **Neovim** (IDE-like setup).
   - Lazy loading, Telescope, Neo-tree, Treesitter, LSP (C++, Go, Node).
@@ -87,13 +87,13 @@ chmod +x install.sh
 
 ### Update Packages & Configuration
 
-Nix 및 Home Manager에 등록된 모든 패키지를 최신 버전으로 업데이트하려면 다음 명령어를 순서대로 실행하세요.
+To update all tools and environments managed by Nix and Home Manager to their latest versions, either run the `./update.sh` script or execute the following commands in order:
 
 ```bash
-# 1. 패키지 레시피(flake.lock)를 최신 상태로 갱신
+# 1. Update the package recipes (flake.lock) to the latest state
 nix flake update
 
-# 2. 업데이트된 내용 적용
+# 2. Apply and build the updated configurations
 hms
 ```
 
