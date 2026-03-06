@@ -72,13 +72,13 @@ Nix 的核心理念是“声明式”。**不要使用 `apt install` 或 `npm in
 4. 终端运行 `hms`。完成！
 
 **Q: 我想加一个新的 Alias（快捷命令），该怎么做？**
-1. 打开 `~/home_env_dotfiles/nix/modules/shell.nix`。
+1. 打开 `~/home_env_dotfiles/nix/modules/zsh.nix`。
 2. 找到 `shellAliases = { ... }` 块。
 3. 添加你的命令，例如：`g = "git";`。
 4. 终端运行 `hms`。新命令立即生效！
 
 **Q: 我想添加环境变量或初始化脚本（例如 Helm 自动补全），该怎么做？**
-1. 打开 `~/home_env_dotfiles/nix/modules/shell.nix`。
+1. 打开 `~/home_env_dotfiles/nix/modules/zsh.nix`。
 2. 找到 `programs.zsh` 中的 `initContent` 块。
 3. 在 Shell 脚本内容区域（如 `export PATH=...` 的上下）添加你的逻辑。例如添加环境变量和补全：
    ```bash
