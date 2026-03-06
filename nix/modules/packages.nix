@@ -37,6 +37,5 @@
     nerd-fonts.ubuntu-mono 
     monaspace
     nerd-fonts.jetbrains-mono
-    fnm
   ];
 }

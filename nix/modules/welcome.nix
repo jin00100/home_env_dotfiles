@@ -57,15 +57,15 @@ EOF
 EOF
         fi
 
-        echo "\x1b[38;2;66;133;244m $os_name\x1b[0m"
-        echo "\x1b[38;2;90;117;240m HOST      : $(uname -n)\x1b[0m"
-        echo "\x1b[38;2;114;102;235m SESSION   : Zellij (Modern Terminal Workspace)\x1b[0m"
-        echo "\x1b[38;2;138;86;231m Kernel    : $(uname -r)\x1b[0m"
-        echo "\x1b[38;2;161;71;226m Date      : $(date +'%Y-%m-%d %H:%M:%S')\x1b[0m"
-        echo "\x1b[38;2;185;55;222m Shell     : $(zsh --version | awk '{print $1, $2}')\x1b[0m"
-        echo "\x1b[38;2;209;39;217m Who       : $(whoami)\x1b[0m"
+        echo -e "\x1b[38;2;66;133;244m $os_name\x1b[0m"
+        echo -e "\x1b[38;2;90;117;240m HOST      : $(uname -n)\x1b[0m"
+        echo -e "\x1b[38;2;114;102;235m SESSION   : Zellij (Modern Terminal Workspace)\x1b[0m"
+        echo -e "\x1b[38;2;138;86;231m Kernel    : $(uname -r)\x1b[0m"
+        echo -e "\x1b[38;2;161;71;226m Date      : $(date +'%Y-%m-%d %H:%M:%S')\x1b[0m"
+        echo -e "\x1b[38;2;185;55;222m Shell     : $(zsh --version | awk '{print $1, $2}')\x1b[0m"
+        echo -e "\x1b[38;2;209;39;217m Who       : $(whoami)\x1b[0m"
 
-        echo "\n\x1b[38;2;66;133;244mWelcome to \x1b[1mZsh\x1b[0;38;2;66;133;244m, \x1b[1m$USER!\x1b[0m"
+        echo -e "\n\x1b[38;2;66;133;244mWelcome to \x1b[1mZsh\x1b[0;38;2;66;133;244m, \x1b[1m$USER!\x1b[0m"
 
         # Re-enable line wrapping
         printf "\e[?7h"

@@ -40,11 +40,6 @@
         }
       '')
       ''
-        # [Added] fnm initialization code
-        if command -v fnm &>/dev/null; then
-          eval "$(fnm env --use-on-cd --shell zsh)"
-        fi
-
         # Helm 自动补全
         if command -v helm &>/dev/null; then
           eval "$(helm completion zsh)"  
@@ -63,12 +58,6 @@
         bindkey '^[OA' history-substring-search-up    # Arrow Up (Application Mode)
         bindkey '^[OB' history-substring-search-down  # Arrow Down (Application Mode)
 
-        # [New] Pyenv initialization
-        if command -v pyenv &>/dev/null; then
-          eval "$(pyenv init -)"
-          eval "$(pyenv virtualenv-init -)"
-        fi
-
         # ---------------------------------------------------------
         # [New] Zellij Autostart
         # ---------------------------------------------------------
@@ -84,10 +73,13 @@
       ''
     ];
 
-    oh-my-zsh = {
-      enable = true;
-      plugins = [ "git" "virtualenv" "history-substring-search" ];
-    };
+    # Native Nix Zsh plugins (faster startup than oh-my-zsh)
+    plugins = [
+      {
+        name = "zsh-history-substring-search";
+        src = "${pkgs.zsh-history-substring-search}/share/zsh-history-substring-search";
+      }
+    ];
 
     shellAliases = {
       # Kubernetes & Helm Shortcuts
