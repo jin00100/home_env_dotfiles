@@ -77,24 +77,26 @@ Nix 的核心理念是“声明式”。**不要使用 `apt install` 或 `npm in
 3. 添加你的命令，例如：`g = "git";`。
 4. 终端运行 `hms`。新命令立即生效！
 
-**Q: 我想添加环境变量或初始化脚本（例如 Helm 自动补全），该怎么做？**
+**Q: 我想添加环境变量，该怎么做？**
 1. 打开 `~/home_env_dotfiles/nix/modules/zsh.nix`。
 2. 找到 `programs.zsh` 中的 `initContent` 块。
-3. 在 Shell 脚本内容区域（如 `export PATH=...` 的上下）添加你的逻辑。例如添加环境变量和补全：
+3. 在 Shell 脚本内容区域（如 `export PATH=...` 的上下）添加你的逻辑。例如添加环境变量：
    ```bash
    export MY_CUSTOM_VAR="my_value"
-
-   # Helm 自动补全
-   if command -v helm &>/dev/null; then
-     eval "$(helm completion zsh)"
-   fi
-
-   # Kubectl 自动补全
-   if command -v kubectl &>/dev/null; then
-     source <(kubectl completion zsh)
-   fi
    ```
 4. 终端运行 `hms`。然后重启终端（或新开一个 Zellij 面板）即可生效！
+
+**Q: 我想开启某个工具（如 fnm, pyenv）的 Zsh 自动补全，怎么做最优雅？**
+Nix Home Manager 提供了原生的集成方式，**不建议再像传统 Linux 那样手动写 `eval "$(..."` 脚本**。
+1. 打开 `~/home_env_dotfiles/nix/modules/shell-utils.nix`。
+2. 像下面这样开启该工具的 `enable` 和 `enableZshIntegration`：
+   ```nix
+   programs.fnm = {
+     enable = true;
+     enableZshIntegration = true; # 这句话会自动帮你把补全注入到 Zsh
+   };
+   ```
+3. 终端运行 `hms` 即可！
 
 ---
 **💡 提示**：如果你处于 Zellij 中且发现 Neovim 快捷键突然没反应了，请检查底部状态栏，多半是你忘记按 `Ctrl + g` 切回 Locked 模式了！
