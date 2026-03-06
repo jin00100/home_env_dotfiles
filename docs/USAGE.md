@@ -84,8 +84,14 @@ Nix 的核心理念是“声明式”。**不要使用 `apt install` 或 `npm in
    ```bash
    export MY_CUSTOM_VAR="my_value"
 
+   # Helm 自动补全
    if command -v helm &>/dev/null; then
      eval "$(helm completion zsh)"
+   fi
+
+   # Kubectl 自动补全
+   if command -v kubectl &>/dev/null; then
+     source <(kubectl completion zsh)
    fi
    ```
 4. 终端运行 `hms`。然后重启终端（或新开一个 Zellij 面板）即可生效！
