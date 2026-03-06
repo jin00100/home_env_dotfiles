@@ -77,5 +77,18 @@ Nix 的核心理念是“声明式”。**不要使用 `apt install` 或 `npm in
 3. 添加你的命令，例如：`g = "git";`。
 4. 终端运行 `hms`。新命令立即生效！
 
+**Q: 我想添加环境变量或初始化脚本（例如 Helm 自动补全），该怎么做？**
+1. 打开 `~/home_env_dotfiles/nix/modules/shell.nix`。
+2. 找到 `programs.zsh` 中的 `initContent` 块。
+3. 在 Shell 脚本内容区域（如 `export PATH=...` 的上下）添加你的逻辑。例如添加环境变量和补全：
+   ```bash
+   export MY_CUSTOM_VAR="my_value"
+
+   if command -v helm &>/dev/null; then
+     eval "$(helm completion zsh)"
+   fi
+   ```
+4. 终端运行 `hms`。然后重启终端（或新开一个 Zellij 面板）即可生效！
+
 ---
 **💡 提示**：如果你处于 Zellij 中且发现 Neovim 快捷键突然没反应了，请检查底部状态栏，多半是你忘记按 `Ctrl + g` 切回 Locked 模式了！
