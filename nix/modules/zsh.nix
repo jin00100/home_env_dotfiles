@@ -45,9 +45,14 @@
           eval "$(fnm env --use-on-cd --shell zsh)"
         fi
 
-        # [Added] Helm completion code
+        # Helm 自动补全
         if command -v helm &>/dev/null; then
           eval "$(helm completion zsh)"  
+        fi
+
+        # Kubectl 自动补全
+        if command -v kubectl &>/dev/null; then
+          source <(kubectl completion zsh)
         fi
         
         export PATH=$HOME/.local/bin:$PATH
@@ -76,11 +81,6 @@
           # Start a new session (prevents duplication)
           exec zellij
         fi
-        
-        # [New] Kubectl completion code
-        if command -v kubectl &>/dev/null; then
-          source <(kubectl completion zsh)
-        fi
       ''
     ];
 
@@ -90,6 +90,10 @@
     };
 
     shellAliases = {
+      # Kubernetes & Helm Shortcuts
+      k = "kubectl";
+      h = "helm";
+
       ls = "eza";
       ll = "eza -l --icons --git -a";
       lt = "eza --tree --level=2 --long --icons --git";
