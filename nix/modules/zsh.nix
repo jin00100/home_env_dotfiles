@@ -40,6 +40,11 @@
         }
       '')
       ''
+        # fnm initialization code
+        if command -v fnm &>/dev/null; then
+          eval "$(fnm env --use-on-cd --shell zsh)"
+        fi
+
         # Helm 自动补全
         if command -v helm &>/dev/null; then
           eval "$(helm completion zsh)"  

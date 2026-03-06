@@ -44,13 +44,7 @@
     nix-direnv.enable = true;
   };
 
-  # 7. fnm (Fast Node Manager)
-  programs.fnm = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
-  # 8. Pyenv
+  # 7. Pyenv
   programs.pyenv = {
     enable = true;
     enableZshIntegration = true;
