@@ -3,7 +3,7 @@ add_newline = false
 
 format = """
 [░▒▓](#a3aed2)\
-[ 󱘖 ](bg:#a3aed2 fg:#090c0c)\
+[  ](bg:#a3aed2 fg:#090c0c)\
 $custom\
 [](bg:#769ff0 fg:#a3aed2)\
 $directory\
@@ -22,11 +22,11 @@ $line_break\
 $character"""
 
 [custom.address]
-# 첫 번째 IP 주소만 가져오도록 awk 수정 (쉼표나 공백으로 여러 개 나올 경우 첫 번째만)
-command = "bash -c \"hostname -I 2>/dev/null | awk '{print $1}' || ipconfig getifaddr en0 2>/dev/null || hostname\""
+# 첫 번째 IP 주소만 가져오도록 awk 수정
+command = "bash -c \"ip -4 addr show scope global | awk '/inet / {print \\$2}' | cut -d/ -f1 | head -n1 || hostname\""
 when = "true"
 style = "bg:#a3aed2 fg:#090c0c"
-format = "[$output ]($style)"
+format = "[ 󱘖 $output ]($style)"
 
 [directory]
 style = "fg:#e3e5e5 bg:#769ff0"
