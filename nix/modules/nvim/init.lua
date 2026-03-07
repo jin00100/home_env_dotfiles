@@ -20,6 +20,7 @@
           max_length = 0,      -- 텍스트 길이 제한 없음
           silent = false,      -- 복사 시 메시지 표시 여부
           trim = false,        -- 텍스트 앞뒤 공백 제거 여부
+          tmux_passthrough = true, -- Zellij/Tmux를 뚫고 Windows 터미널까지 복사 신호를 전달
         })
         
         -- yank 이벤트를 감지하여 OSC 52 신호 전송

@@ -67,7 +67,8 @@
 
       mouse_mode = true;
       copy_on_select = true;
-      copy_command = if config.targets.genericLinux.enable then "wl-copy" else "";
+      copy_clipboard = "system";
+      copy_command = ""; -- 강제 복사 명령어를 비워두어야 SSH 환경에서 OSC 52 패스스루가 정상 작동함
     };
   };
 }
