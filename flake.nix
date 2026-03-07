@@ -22,15 +22,26 @@
       userEnv = builtins.getEnv "USER";
       username = if userEnv != "" then userEnv else builtins.getEnv "LOGNAME";
       homeDirectory = builtins.getEnv "HOME";
-    in {
-      # Using a universal "default" identifier to run consistently across any machine
-      homeConfigurations."default" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        
-        # Pass dynamic variables into Home Manager modules (e.g., home.nix)
+      
+      # Helper function to generate configurations for different architectures (if needed without --impure)
+      mkConfig = sys: home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.${sys};
         extraSpecialArgs = { inherit username homeDirectory; };
-        
         modules = [ ./nix/home.nix ];
+      };
+    in {
+      homeConfigurations = {
+        # Default: Impure dynamic configuration (Your current powerful setup)
+        "default" = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
+          extraSpecialArgs = { inherit username homeDirectory; };
+          modules = [ ./nix/home.nix ];
+        };
+        
+        # Explicit Architectures (Like the other repo, for cross-compilation or strict usage)
+        "jin-x86-linux"   = mkConfig "x86_64-linux";
+        "jin-aarch-linux" = mkConfig "aarch64-linux";
+        "jin-aarch-mac"   = mkConfig "aarch64-darwin";
       };
     };
 }

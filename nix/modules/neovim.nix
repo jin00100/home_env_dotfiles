@@ -32,6 +32,7 @@
       trouble-nvim      # 에러 목록
       toggleterm-nvim   # 터미널 관리 (Ctrl+/)
       lazygit-nvim      # Lazygit 통합
+      nvim-osc52        # SSH 클립보드 (OSC 52) 지원
       
       # LSP & Completion
       nvim-lspconfig

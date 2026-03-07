@@ -1,6 +1,8 @@
 { config, pkgs, lib, ... }:
 
 {
+  home.file.".config/starship-ssh.toml".source = ./starship-ssh.toml;
+
   # 1. Starship Prompt
   programs.starship = {
     enable = true;

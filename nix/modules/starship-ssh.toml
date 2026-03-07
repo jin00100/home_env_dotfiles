@@ -1,0 +1,75 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+[░▒▓](#ee99a0)\
+[ 󱘖 ](bg:#ee99a0 fg:#1e1e2e)\
+$custom\
+[](bg:#f5a97f fg:#ee99a0)\
+$directory\
+[](fg:#f5a97f bg:#394260)\
+$git_branch\
+$git_status\
+[](fg:#394260 bg:#212736)\
+$nodejs\
+$rust\
+$golang\
+$php\
+[](fg:#212736 bg:#1d2230)\
+$time\
+[ ](fg:#1d2230)\
+\n$character"""
+
+[custom.address]
+# 어떤 쉘에서든 bash -c를 통해 안전하게 IP를 가져오도록 수정
+command = "bash -c \"hostname -I | awk '{print $1}' || ipconfig getifaddr en0 || hostname\""
+when = "true"
+style = "bg:#ee99a0 fg:#1e1e2e"
+format = "[$output ]($style)"
+
+[directory]
+style = "fg:#1e1e2e bg:#f5a97f"
+format = "[ $path ]($style)"
+truncation_length = 5
+truncate_to_repo = false
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = " "
+"Pictures" = " "
+
+[git_branch]
+symbol = ""
+style = "bg:#394260"
+format = '[[ $symbol $branch ](fg:#f5a97f bg:#394260)]($style)'
+
+[git_status]
+style = "bg:#394260"
+format = '[[($all_status$ahead_behind )](fg:#f5a97f bg:#394260)]($style)'
+
+[nodejs]
+symbol = ""
+style = "bg:#212736"
+format = '[[ $symbol ($version) ](fg:#f5a97f bg:#212736)]($style)'
+
+[rust]
+symbol = ""
+style = "bg:#212736"
+format = '[[ $symbol ($version) ](fg:#f5a97f bg:#212736)]($style)'
+
+[golang]
+symbol = ""
+style = "bg:#212736"
+format = '[[ $symbol ($version) ](fg:#f5a97f bg:#212736)]($style)'
+
+[php]
+symbol = ""
+style = "bg:#212736"
+format = '[[ $symbol ($version) ](fg:#f5a97f bg:#212736)]($style)'
+
+[time]
+disabled = false
+time_format = "%R" 
+style = "bg:#1d2230"
+format = '[[  $time ](fg:#a0a9cb bg:#1d2230)]($style)'

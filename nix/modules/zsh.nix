@@ -38,6 +38,10 @@
           [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]] || \
           [[ "$(ps -o comm= -p $PPID 2>/dev/null)" == "sshd" ]]
         }
+
+        if is_ssh; then
+          export STARSHIP_CONFIG="$HOME/.config/starship-ssh.toml"
+        fi
       '')
       ''
         # fnm initialization code

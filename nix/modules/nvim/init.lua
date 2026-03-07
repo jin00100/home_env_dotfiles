@@ -13,6 +13,27 @@
       vim.g.mapleader = " "         
       vim.opt.clipboard = "unnamedplus"
       vim.opt.termguicolors = true
+
+      -- [OSC 52 클립보드 설정 (SSH 환경용)]
+      safe_require("osc52", function(osc52)
+        osc52.setup({
+          max_length = 0,      -- 텍스트 길이 제한 없음
+          silent = false,      -- 복사 시 메시지 표시 여부
+          trim = false,        -- 텍스트 앞뒤 공백 제거 여부
+        })
+        
+        -- yank 이벤트를 감지하여 OSC 52 신호 전송
+        local function copy()
+          if vim.v.event.operator == "y" and vim.v.event.regname == "" then
+            osc52.copy_register("+")
+          end
+        end
+        
+        vim.api.nvim_create_autocmd('TextYankPost', {
+          callback = copy,
+        })
+      end)
+
       vim.opt.laststatus = 3        -- 전역 상태줄 (Global Statusline)
       vim.opt.cmdheight = 1         -- 커맨드 라인 높이 유지
 
@@ -165,6 +186,34 @@
           indent = { enable = true },
         }
       end)
+
+      -- [진단(Diagnostics) 설정 UI 개선]
+      vim.diagnostic.config({
+        virtual_text = {
+          prefix = '●', -- 오류 앞에 표시될 아이콘
+          severity_sort = true,
+        },
+        signs = true,    -- 왼쪽 숫자 옆에 아이콘 표시
+        underline = true, -- 오류 부분에 밑줄 표시
+        update_in_insert = false,
+        severity_sort = true,
+        float = {
+          border = 'rounded',
+          source = 'always', -- 어느 LSP에서 보낸 에러인지 표시
+        },
+      })
+
+      -- 진단 관련 아이콘 설정 (Sign Column)
+      local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = "󱩎 " }
+      for type, icon in pairs(signs) do
+        local hl = "DiagnosticSign" .. type
+        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+      end
+
+      -- 진단 상세 보기 단축키
+      vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = "Show line diagnostics" })
+      vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = "Go to previous diagnostic" })
+      vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = "Go to next diagnostic" })
 
       -- [LSP & Autocomplete 설정]
       local cmp_ok, cmp = pcall(require, "cmp")
