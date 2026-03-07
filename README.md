@@ -5,20 +5,25 @@ This setup supports both **Native Linux** and **WSL** with a single, unified con
 
 ## ✨ Features
 
-- **⚡ Shell:** Zsh optimized with **Starship (Jetpack Theme)**.
-- **🛠️ Modern Core Utils:** Replaces legacy tools with modern Rust alternatives.
+- **⚡ Shell:** Zsh optimized with **Starship (Jetpack Theme)**. Auto-detects SSH sessions and displays a special Starship prompt (Starship-SSH).
+- **🛠️ Modern Core Utils & DevOps:** Replaces legacy tools with modern Rust alternatives and essential DevOps data processors.
   - `ls` -> `eza` (Icons & Git status)
-  - `cd` -> `zoxide` (Smarter navigation)
+  - `cd` -> `zoxide` (Smarter navigation, overwrites default `cd`)
   - `cat` -> `bat` (Syntax highlighting)
   - `find` -> `fd` / `grep` -> `ripgrep`
+  - `top` -> `btop` (Modern system monitor)
+  - `jq` / `yq` (JSON and YAML processors)
   - `direnv` -> **`direnv` (Nix-direnv integrated)**
 - **💻 Terminal Multiplexer:** **Zellij** (Modern Rust-based) pre-configured.
   - Auto-start on launch (except VS Code).
   - Prefix: `Ctrl + g` (Locked/Normal toggle).
   - Modern UI with Custom Cyber-Blue theme and helpful status bars.
   - Seamless navigation and integration with Neovim.
-- **📝 Editor:** **Neovim** (IDE-like setup).
-  - Lazy loading, Telescope, Neo-tree, Treesitter, LSP (C++, Go, Node).
+- **📝 Editor:** **Neovim (DevOps Enhanced)**.
+  - Lazy loading, Telescope, Neo-tree, Treesitter.
+  - Advanced LSP (C++, Go, Node, YAML, Bash, Docker).
+  - Snippets (`friendly-snippets`), Beautiful Diagnostics UI.
+  - **OSC 52 integration**: Seamless clipboard synchronization when working via SSH.
 - **🤖 AI:** Auto-installation of `@google/gemini-cli`.
 - **📦 Modular:** Clean file structure separated by function (`modules/*.nix`).
 
@@ -73,6 +78,7 @@ chmod +x install.sh
 | Command | Action | Alias |
 | :--- | :--- | :--- |
 | `hms` | Apply Nix configuration changes | `home-manager switch ...` |
+| `nix-clean` | Clean up old Nix generations and garbage collect | `nix-env --delete-generations old...` |
 | `ll` / `lt` | List files (Grid / Tree view) | `eza ...` |
 | `zj` | Start Zellij session | - |
 | `zj_shortcuts` | Show Zellij keybindings summary | - |
