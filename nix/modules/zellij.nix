@@ -68,7 +68,7 @@
       mouse_mode = true;
       copy_on_select = true;
       copy_clipboard = "system";
-      copy_command = ""; -- 강제 복사 명령어를 비워두어야 SSH 환경에서 OSC 52 패스스루가 정상 작동함
+      copy_command = ""; # 강제 복사 명령어를 비워두어야 SSH 환경에서 OSC 52 패스스루가 정상 작동함
     };
   };
 }
