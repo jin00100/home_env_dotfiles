@@ -106,6 +106,9 @@
       vim = "nvim";
       zj = "zellij";
       
+      # [New] Nix cleanup alias
+      nix-clean = "nix-env --delete-generations old && nix-store --gc";
+
       zj_shortcuts = ''echo -e "\033[1;34m=== Zellij Custom Shortcuts (Tmux Style) ===\033[0m" && \
                         echo -e "\033[1;33m[ Quick Actions (Alt Key) ]\033[0m" && \
                         echo "  Alt + n       : New Pane (Right)" && \

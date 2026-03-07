@@ -137,6 +137,8 @@
           updateevents = "TextChanged,TextChangedI",
           delete_check_events = "TextChanged",
         })
+        -- friendly-snippets (VSCode 포맷) 로드
+        require("luasnip.loaders.from_vscode").lazy_load()
       end)
 
       -- [Neo-tree 키맵]
@@ -193,7 +195,7 @@
       end
 
       -- 사용 중인 언어 서버들 목록 (packages.nix에 설치된 것들)
-      local servers = { 'gopls', 'nil_ls' }
+      local servers = { 'gopls', 'nil_ls', 'yamlls', 'bashls', 'dockerls' }
 
       -- Neovim 0.11+ 방식 (vim.lsp.config)
       if vim.lsp.config then
@@ -219,3 +221,17 @@
           end
         end
       end
+
+      -- [YAML 전용 설정 (DevOps 추천)]
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = {"yaml", "yml"},
+        callback = function()
+          vim.opt_local.autoindent = true
+          vim.opt_local.smartindent = true
+          vim.opt_local.expandtab = true
+          vim.opt_local.tabstop = 2
+          vim.opt_local.shiftwidth = 2
+          vim.opt_local.number = true
+          -- filetype plugin indent on 은 Neovim에서 기본적으로 활성화되어 있으므로 생략 가능합니다.
+        end,
+      })

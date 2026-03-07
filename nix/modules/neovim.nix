@@ -41,6 +41,7 @@
       cmp-path
       luasnip
       cmp_luasnip
+      friendly-snippets # 사전 정의된 스니펫 모음
     ];
 
     # 2. Lua 설정

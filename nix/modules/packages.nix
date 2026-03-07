@@ -9,7 +9,7 @@
     # [시스템 유틸 및 CLI 도구]
     # 순수하게 도구로서 작동하며 시스템 라이브러리와 충돌이 적은 것들 위주
     neofetch 
-    htop 
+    btop          # Modern system monitor
     ripgrep 
     fd 
     unzip 
@@ -22,6 +22,8 @@
     ncdu
     duf
     tldr
+    jq            # JSON processor
+    yq-go         # YAML processor (yq)
     
     # [Neovim 보조 도구 (LSP/Parsers)]
     # 에디터 경험을 위해 가벼운 서버들만 유지
@@ -31,6 +33,9 @@
     lua51Packages.jsregexp # Luasnip dependency
     gopls         # Go LSP
     clang-tools   # clangd 등 (헤더 검색 등 에디터용)
+    yaml-language-server              # YAML LSP
+    nodePackages.bash-language-server # Bash LSP
+    dockerfile-language-server-nodejs # Dockerfile LSP
 
     # 폰트
     maple-mono.NF
