@@ -4,7 +4,7 @@ add_newline = false
 format = """
 [░▒▓](#a3aed2)\
 [  ](bg:#a3aed2 fg:#090c0c)\
-$custom\
+${env_var.SSH_LOCAL_IP}\
 [](bg:#769ff0 fg:#a3aed2)\
 $directory\
 [](fg:#769ff0 bg:#394260)\
@@ -21,12 +21,11 @@ $time\
 $line_break\
 $character"""
 
-[custom.address]
-# 첫 번째 IP 주소만 가져오도록 awk 수정
-command = "bash -c \"ip -4 addr show scope global | awk '/inet / {print \\$2}' | cut -d/ -f1 | head -n1 || hostname\""
-when = "true"
+[env_var.SSH_LOCAL_IP]
+variable = "SSH_LOCAL_IP"
+default = "Unknown"
 style = "bg:#a3aed2 fg:#090c0c"
-format = "[ 󱘖 $output ]($style)"
+format = "[ 󱘖 $env_value ]($style)"
 
 [directory]
 style = "fg:#e3e5e5 bg:#769ff0"

@@ -42,6 +42,8 @@
 
         if is_ssh; then
           export STARSHIP_CONFIG="$HOME/.config/starship-ssh.toml"
+          # Cache IP address for Starship to avoid lag on every prompt render
+          export SSH_LOCAL_IP=$(ip -4 addr show scope global 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | head -n1 || hostname)
         fi
       '')
       ''
@@ -50,14 +52,23 @@
           eval "$(fnm env --use-on-cd --shell zsh)"
         fi
 
-        # Helm 自动补全
+        # --- Autocompletion Caching for Performance ---
+        mkdir -p ~/.zsh_cache
+
+        # Helm 自动补全 (Cached)
         if command -v helm &>/dev/null; then
-          eval "$(helm completion zsh)"  
+          if [[ ! -f ~/.zsh_cache/helm_completion ]]; then
+            helm completion zsh > ~/.zsh_cache/helm_completion 2>/dev/null
+          fi
+          source ~/.zsh_cache/helm_completion
         fi
 
-        # Kubectl 自动补全
+        # Kubectl 自动补全 (Cached)
         if command -v kubectl &>/dev/null; then
-          source <(kubectl completion zsh)
+          if [[ ! -f ~/.zsh_cache/kubectl_completion ]]; then
+            kubectl completion zsh > ~/.zsh_cache/kubectl_completion 2>/dev/null
+          fi
+          source ~/.zsh_cache/kubectl_completion
         fi
         
         export PATH=$HOME/.local/bin:$PATH
