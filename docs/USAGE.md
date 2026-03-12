@@ -1,4 +1,4 @@
-# 🚀 Jin's 现代化开发环境使用教程
+# 🚀 Jin's 现代化开发环境使用教程1
 
 欢迎使用基于 Nix Home Manager 构建的现代化开发环境！本环境将 Zsh、Zellij、Neovim 以及各种现代 Rust CLI 工具深度整合，为您提供极速、美观且统一的终端体验，并特别针对 DevOps 工作流和 SSH 远程开发进行了强化。
 
