@@ -1,4 +1,4 @@
-# 🚀 Dotfiles (Nix Home Manager)
+1# 🚀 Dotfiles (Nix Home Manager)
 
 **jin**'s declarative development environment configuration managed by **Nix Home Manager**.
 This setup supports both **Native Linux** and **WSL** with a single, unified configuration, ensuring a consistent and high-performance workflow.
