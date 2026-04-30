@@ -1,5 +1,7 @@
 1# 🚀 Dotfiles (Nix Home Manager)
 
+[🇨🇳 中文文档 (Chinese)](README_zh.md) | [🇰🇷 한국어 문서 (Korean)](docs/Home_Manager_Jetpack_Final.md)
+
 **jin**'s declarative development environment configuration managed by **Nix Home Manager**.
 This setup supports both **Native Linux** and **WSL** with a single, unified configuration, ensuring a consistent and high-performance workflow.
 
@@ -14,6 +16,7 @@ This setup supports both **Native Linux** and **WSL** with a single, unified con
   - `top` -> `btop` (Modern system monitor)
   - `jq` / `yq` (JSON and YAML processors)
   - `direnv` -> **`direnv` (Nix-direnv integrated)**
+  - **`yazi`** (Fast Terminal File Manager)
 - **💻 Terminal Multiplexer:** **Zellij** (Modern Rust-based) pre-configured.
   - Auto-start on launch (except VS Code).
   - Prefix: `Ctrl + g` (Locked/Normal toggle).
@@ -82,6 +85,7 @@ chmod +x install.sh
 | `ll` / `lt` | List files (Grid / Tree view) | `eza ...` |
 | `zj` | Start Zellij session | - |
 | `zj_shortcuts` | Show Zellij keybindings summary | - |
+| `y` | Open Yazi (Terminal File Manager) | `yazi` |
 | `vi` / `vim` | Open Neovim | `nvim` |
 | `Space + f` | Find files (Telescope) | - |
 | `Space + g` | Live Grep (Telescope) | - |

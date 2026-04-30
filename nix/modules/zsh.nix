@@ -121,6 +121,7 @@
       vi = "nvim";
       vim = "nvim";
       zj = "zellij";
+      y = "yazi";
       
       # [New] Nix cleanup alias
       nix-clean = "nix-env --delete-generations old && nix-store --gc";

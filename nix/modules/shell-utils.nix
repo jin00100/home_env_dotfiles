@@ -51,4 +51,10 @@
     enable = true;
     enableZshIntegration = true;
   };
+
+  # 8. Yazi (Terminal File Manager)
+  programs.yazi = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 }
