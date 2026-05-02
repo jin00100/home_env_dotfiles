@@ -1,7 +1,5 @@
 1# 🚀 Dotfiles (Nix Home Manager)
 
-[🇨🇳 中文文档 (Chinese)](README_zh.md) | [🇰🇷 한국어 문서 (Korean)](docs/Home_Manager_Jetpack_Final.md)
-
 **jin**'s declarative development environment configuration managed by **Nix Home Manager**.
 This setup supports both **Native Linux** and **WSL** with a single, unified configuration, ensuring a consistent and high-performance workflow.
 
