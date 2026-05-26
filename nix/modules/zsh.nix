@@ -80,6 +80,18 @@
         bindkey '^[OB' history-substring-search-down  # Arrow Down (Application Mode)
 
         # ---------------------------------------------------------
+        # [New] sudo wrapper to handle aliases and Nix paths
+        # ---------------------------------------------------------
+        function sudo() {
+          if [[ "$1" == "vim" || "$1" == "vi" ]]; then
+            shift
+            command sudo env PATH="$PATH" nvim "$@"
+          else
+            command sudo env PATH="$PATH" "$@"
+          fi
+        }
+
+        # ---------------------------------------------------------
         # [New] Zellij Autostart
         # ---------------------------------------------------------
         function is_vscode() {
@@ -122,7 +134,6 @@
       vim = "nvim";
       # [New] Fix for using sudo with nix-installed nvim
       svim = "sudo env PATH=$PATH nvim";
-      sudo = "sudo ";
       zj = "zellij";
       y = "yazi";
       
