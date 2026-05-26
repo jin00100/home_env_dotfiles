@@ -120,6 +120,9 @@
       hms = "home-manager switch --flake ~/home_env_dotfiles/#default --impure";
       vi = "nvim";
       vim = "nvim";
+      # [New] Fix for using sudo with nix-installed nvim
+      svim = "sudo env PATH=$PATH nvim";
+      sudo = "sudo ";
       zj = "zellij";
       y = "yazi";
       
