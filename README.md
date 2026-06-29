@@ -104,7 +104,7 @@ nix flake update
 # 2. Apply and build the updated configurations
 hms
 ```
-
+1
 ---
 
 **Note:** Ghostty configuration is managed, but the binary should be installed manually on Native Linux.
