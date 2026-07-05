@@ -68,7 +68,7 @@
       mouse_mode = true;
       copy_on_select = true;
       copy_clipboard = "system";
-      copy_command = "wl-copy"; # Use Wayland native clipboard tool
+      copy_command = "true"; # 假装复制成功，防止 wl-copy 在纯 SSH 环境下卡死 Zellij
     };
   };
 }
