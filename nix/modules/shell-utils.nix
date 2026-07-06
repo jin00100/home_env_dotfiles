@@ -57,4 +57,10 @@
     enable = true;
     enableZshIntegration = true;
   };
+
+  # 9. Navi (Interactive Cheatsheet)
+  programs.navi = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 }
