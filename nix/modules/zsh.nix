@@ -92,17 +92,7 @@
         }
 
         # ---------------------------------------------------------
-        # [New] Zellij Autostart
-        # ---------------------------------------------------------
-        function is_vscode() {
-          [[ -n "$VSCODE_IPC_HOOK_CLI" || -n "$VSCODE_PID" || "$TERM_PROGRAM" == "vscode" ]]
-        }
 
-        # Interactive Shell + Outside Zellij + Not VSCode + Not SSH -> Autostart
-        if [[ $- == *i* ]] && [[ -z "$ZELLIJ" ]] && [[ -z "$ZELLIJ_SKIP_AUTOSTART" ]] && ! is_vscode && ! is_ssh; then
-          # Start a new session (prevents duplication)
-          exec zellij
-        fi
       ''
     ];
 
