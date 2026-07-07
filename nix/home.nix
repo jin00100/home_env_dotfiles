@@ -14,6 +14,7 @@
     ./modules/zellij.nix
     ./modules/git.nix
     ./modules/ghostty.nix
+    ./modules/kitty.nix
   ];
 
   targets.genericLinux.enable = true;
