@@ -12,6 +12,7 @@
     ./modules/bash.nix
     ./modules/nushell.nix
     ./modules/welcome.nix
+    ./modules/shell-utils.nix
     ./modules/packages.nix
     ./modules/neovim.nix
     ./modules/zellij.nix
