@@ -1,8 +1,7 @@
 { config, pkgs, lib, ... }:
 
 {
-  programs.zsh.initContent = lib.mkAfter [
-    ''
+  programs.zsh.initContent = lib.mkAfter ''
       # ---------------------------------------------------------
       # [New] Welcome Message for Zellij Sessions or SSH
       # ---------------------------------------------------------
@@ -63,6 +62,5 @@ EOF
         # Re-enable line wrapping
         printf "\e[?7h"
       fi      
-    ''
-  ];
+    '';
 }
