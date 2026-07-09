@@ -55,7 +55,7 @@
     clang-tools   # clangd 등 (헤더 검색 등 에디터용)
     yaml-language-server              # YAML LSP
     nodePackages.bash-language-server # Bash LSP
-    dockerfile-language-server-nodejs # Dockerfile LSP
+    dockerfile-language-server        # Dockerfile LSP
 
     # 폰트
     maple-mono.NF
