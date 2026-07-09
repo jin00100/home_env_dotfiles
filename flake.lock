@@ -39,7 +39,24 @@
     "root": {
       "inputs": {
         "home-manager": "home-manager",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "smoothcursor": "smoothcursor"
+      }
+    },
+    "smoothcursor": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1726648986,
+        "narHash": "sha256-P0jGm5ODEVbtmqPGgDFBPDeuOF49CFq5x1PzubEJgaM=",
+        "owner": "gen740",
+        "repo": "SmoothCursor.nvim",
+        "rev": "12518b284e1e3f7c6c703b346815968e1620bee2",
+        "type": "github"
+      },
+      "original": {
+        "owner": "gen740",
+        "repo": "SmoothCursor.nvim",
+        "type": "github"
       }
     }
   },

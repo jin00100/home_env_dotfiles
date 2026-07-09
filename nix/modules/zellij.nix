@@ -12,7 +12,7 @@
       mirror_session_to_terminal_title = true;
 
       keybinds = {
-        unbind = [ "Ctrl b" "Ctrl h" ];
+        unbind = [ "Ctrl b" "Ctrl h" "Alt f" "Alt b" ];
         
         normal = {
           "bind \"Ctrl g\"" = { SwitchToMode = "Locked"; };

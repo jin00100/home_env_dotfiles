@@ -1,4 +1,4 @@
-{ config, pkgs, username, homeDirectory, ... }:
+{ config, pkgs, username, homeDirectory, inputs, ... }:
 
 {
   # [User Info - Dynamically passing from flake.nix]

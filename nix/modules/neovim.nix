@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, inputs, ... }:
 
 {
   programs.neovim = {
@@ -6,7 +6,10 @@
     defaultEditor = true;
     viAlias = true; 
     vimAlias = true;
-    # wrapRc = true;  <-- 이 줄을 삭제하거나 주석 처리하세요.
+    vimdiffAlias = true;
+    withNodeJs = true;
+    withRuby = false;
+    withPython3 = false;
 
     # Lua 라이브러리 추가 (jsregexp 등)
     extraLuaPackages = ps: [ ps.jsregexp ];
@@ -34,6 +37,10 @@
       lazygit-nvim      # Lazygit 통합
       nvim-osc52        # SSH 클립보드 (OSC 52) 지원
       
+      # Modern UI / Notification
+      noice-nvim
+      nvim-notify
+      
       # LSP & Completion
       nvim-lspconfig
       nvim-cmp
@@ -43,9 +50,34 @@
       luasnip
       cmp_luasnip
       friendly-snippets # 사전 정의된 스니펫 모음
+      
+      # Colorscheme
+      catppuccin-nvim
+
+      # Markdown Rendering
+      markview-nvim
+
+      # Smooth Cursor
+      (pkgs.vimUtils.buildVimPlugin {
+        name = "smoothcursor-nvim";
+        src = inputs.smoothcursor;
+      })
     ];
 
     # 2. Lua 설정
-    extraConfig = "luafile ${./nvim/init.lua}";
+    initLua = ''
+      require('utils')
+      require('options')
+      require('keymaps')
+      require('plugins')
+    '';
+  };
+
+  # 3. Lua 모듈들을 ~/.config/nvim/lua/ 경로에 배치
+  xdg.configFile = {
+    "nvim/lua/utils.lua".source = ./nvim/lua/utils.lua;
+    "nvim/lua/options.lua".source = ./nvim/lua/options.lua;
+    "nvim/lua/keymaps.lua".source = ./nvim/lua/keymaps.lua;
+    "nvim/lua/plugins.lua".source = ./nvim/lua/plugins.lua;
   };
 }

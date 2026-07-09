@@ -10,9 +10,15 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Neovim SmoothCursor
+    smoothcursor = {
+      url = "github:gen740/SmoothCursor.nvim";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, ... }@inputs:
     let
       # Use --impure flag to interpret system environment at runtime
       system = builtins.currentSystem;
@@ -26,7 +32,7 @@
       # Helper function to generate configurations for different architectures (if needed without --impure)
       mkConfig = sys: home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.${sys};
-        extraSpecialArgs = { inherit username homeDirectory; };
+        extraSpecialArgs = { inherit username homeDirectory inputs; };
         modules = [ ./nix/home.nix ];
       };
     in {
@@ -34,7 +40,7 @@
         # Default: Impure dynamic configuration (Your current powerful setup)
         "default" = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          extraSpecialArgs = { inherit username homeDirectory; };
+          extraSpecialArgs = { inherit username homeDirectory inputs; };
           modules = [ ./nix/home.nix ];
         };
         

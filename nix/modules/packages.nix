@@ -7,24 +7,44 @@
 
   home.packages = with pkgs; [
     # [시스템 유틸 및 CLI 도구]
-    # 순수하게 도구로서 작동하며 시스템 라이브러리와 충돌이 적은 것들 위주
-    neofetch 
-    btop          # Modern system monitor
-    ripgrep 
-    fd 
-    unzip 
-    lazygit 
+    wget
+    curl
+    gum
+    jq
+    btop
+    ripgrep
+    fd
+    unzip
+    rsync
+    inotify-tools
+    xclip
+    wl-clipboard
+    eza
+    bat
+    fastfetch
+    figlet
+    htop
+    fzf
+    libnotify
+
+    # [Ported & Modern Rust Utils]
+    lazygit
     lolcat
     lsb-release
-    xclip 
-    xsel 
-    wl-clipboard
+    xsel
     ncdu
     duf
     tldr
-    jq            # JSON processor
-    yq-go         # YAML processor (yq)
-    
+    yq-go
+
+    # [DevOps & Nix Native Tools]
+    procs
+    gping
+    dust
+    nix-output-monitor
+    nix-index
+    nix-tree
+    rclone
     # [Neovim 보조 도구 (LSP/Parsers)]
     # 에디터 경험을 위해 가벼운 서버들만 유지
     tree-sitter   # Tree-sitter CLI (Fix checkhealth error)
