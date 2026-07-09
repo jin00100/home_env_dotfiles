@@ -1,0 +1,110 @@
+{ config, pkgs, lib, ... }:
+
+{
+  programs.nushell = {
+    enable = true;
+    
+    # [Nushell Settings] - 퍼지 검색 및 고도화된 완성 설정
+    settings = {
+      show_banner = false;
+      edit_mode = "vi";
+      completions = {
+        case_sensitive = false;
+        quick = true;
+        partial = true;
+        algorithm = "fuzzy"; # 퍼지 검색 활성화
+        external = { 
+          enable = false; 
+          max_results = 100; 
+        };
+      };
+    };
+
+    envFile.text = ''
+      # [Nix & Home Manager Path Setup]
+      let hm_bin = ($env.HOME | path join ".local" "state" "nix" "profiles" "home-manager" "profile" "bin")
+
+      $env.PATH = (
+        $env.PATH
+        | split row (char esep)
+        | prepend "/nix/var/nix/profiles/default/bin"
+        | prepend "/run/current-system/sw/bin"
+        | prepend $hm_bin
+        | uniq
+      )
+
+
+      # [Environment Detection]
+      let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty))
+      let is_container = (
+        ("/.dockerenv" | path exists) or 
+        ("/run/.containerenv" | path exists) or 
+        (not ($env | get -o DISTROBOX_ENTER_PATH | is-empty))
+      )
+
+      # [Starship 설정 연동]
+      if ($is_ssh) {
+        $env.STARSHIP_CONFIG = ($env.HOME | path join ".config" "starship-ssh.toml")
+      } else if ($is_container) {
+        $env.STARSHIP_CONFIG = ($env.HOME | path join ".config" "starship-docker.toml")
+      }
+    '';
+
+    extraConfig = ''
+      # [Carapace Completion Helper]
+      # 모든 명령어에 대해 강력한 자동완성 지원
+      let carapace_completer = { |spans| carapace $spans.0 nushell ...$spans | from json }
+      $env.config.completions.external.completer = $carapace_completer
+
+      # [Welcome Message]
+      ^welcome-msg
+
+      # [Environment Check for Aliases]
+      let is_ssh = (not ($env | get -o SSH_CLIENT | is-empty)) or (not ($env | get -o SSH_TTY | is-empty))
+      let is_container = (
+        ("/.dockerenv" | path exists) or 
+        ("/run/.containerenv" | path exists) or 
+        (not ($env | get -o DISTROBOX_ENTER_PATH | is-empty))
+      )
+
+      # [SSH Wrapper]
+      def --env ssh [...args] {
+        let is_ghostty = ($env.TERM? == "xterm-ghostty") or ($env.TERM_PROGRAM? == "Ghostty")
+        if ($is_ghostty and ($args | length) > 0) {
+          ^ghostty +ssh ...$args
+        } else {
+          with-env { TERM: "xterm-256color", COLORTERM: "truecolor" } {
+            ^ssh ...$args
+          }
+        }
+      }
+
+      # [Zellij Wrapper]
+      if ($is_ssh or $is_container) {
+        alias zellij = zellij --config ($env.HOME | path join ".config" "zellij" "remote.kdl")
+      }
+
+      # [Dynamic Aliases for Nushell]
+      let has_eza = (which eza | is-empty | not $in)
+      
+      if $has_eza {
+        # 'ls'는 Nushell의 기본 명령(Table 반환)을 유지하고, 
+        # eza 기능은 ll, lt 등을 통해 제공합니다.
+        alias ll = eza -l --icons --git -a
+        alias lt = eza --tree --level=2 --icons --git
+      } else {
+        alias ll = ls -a
+      }
+
+      if (which bat | is-empty | not $in) {
+        alias cat = bat
+      }
+    '';
+
+    shellAliases = {
+      g  = "git";
+      v  = "nvim";
+      keymap = "bat ~/nixos-home-manager/docs/keyboard-layout.md";
+    };
+  };
+}

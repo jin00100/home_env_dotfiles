@@ -8,7 +8,10 @@
 
   # [Module Loader] Load feature-specific files
   imports = [
-    ./modules/shell.nix
+    ./modules/zsh.nix
+    ./modules/bash.nix
+    ./modules/nushell.nix
+    ./modules/welcome.nix
     ./modules/packages.nix
     ./modules/neovim.nix
     ./modules/zellij.nix

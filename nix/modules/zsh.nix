@@ -4,148 +4,92 @@
   programs.zsh = {
     enable = true;
     enableCompletion = true;
+    # 사용자가 드롭다운 메뉴(zsh-autocomplete)의 버벅임에 불만을 표시하여 클래식 인라인 고스트 텍스트 자동완성으로 복구합니다.
     autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
-    defaultKeymap = "emacs";
 
-    # [.zshenv] Loaded first (Terminal compatibility fallbacks)
+    # [Zsh Performance Tuning]
+    localVariables = {
+      ZSH_AUTOSUGGEST_USE_ASYNC = "1";
+      ZSH_AUTOSUGGEST_MANUAL_REBIND = "1";
+      ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE = "20";
+      ZSH_DISABLE_COMPFIX = "true"; # Distrobox/Nix 권한 경고 방지
+    };
+
     envExtra = ''
-      # [Terminal Compatibility] Fallback to standard if xterm-ghostty terminfo is missing
-      if [[ "$TERM" == "xterm-ghostty" ]] && ! command -v infocmp &>/dev/null; then
-        export TERM=xterm-256color
-      elif [[ "$TERM" == "xterm-ghostty" ]] && ! infocmp xterm-ghostty &>/dev/null; then
-        export TERM=xterm-256color
+      export PATH=$HOME/.local/bin:$PATH
+      export ZSH_DISABLE_COMPFIX="true" 
+    '';
+
+    # [Zsh Initialization]
+    # NOTE: 'initContent' is used as it is the modern/preferred option in this setup.
+    initContent = ''
+      source ${./shell-common.sh}
+
+      # [SSH/Zellij Specific Fixes]
+      if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
+        bindkey "^?" backward-delete-char
+        bindkey "^H" backward-delete-char
+      fi
+
+      # [Welcome Message]
+      if [[ $- == *i* ]] && command -v welcome-msg &>/dev/null; then welcome-msg; fi
+
+      # [External Tools (fnm)]
+      if command -v fnm &>/dev/null; then eval "$(fnm env --use-on-cd --shell zsh)"; fi
+
+      # [Kubernetes & Helm Autocompletion (Cached)]
+      mkdir -p ~/.zsh_cache
+      if command -v helm &>/dev/null; then
+        if [[ ! -f ~/.zsh_cache/helm_completion ]]; then
+          helm completion zsh > ~/.zsh_cache/helm_completion 2>/dev/null
+        fi
+        source ~/.zsh_cache/helm_completion
+      fi
+
+      if command -v kubectl &>/dev/null; then
+        if [[ ! -f ~/.zsh_cache/kubectl_completion ]]; then
+          kubectl completion zsh > ~/.zsh_cache/kubectl_completion 2>/dev/null
+        fi
+        source ~/.zsh_cache/kubectl_completion
+      fi
+
+      # [Keybindings]
+      bindkey '^[[A' history-substring-search-up
+      bindkey '^[[B' history-substring-search-down
+
+
+      # [Final Cleanup for Containers]
+      # 모든 자동 통합(zoxide, atuin 등)이 끝난 후 컨테이너라면 한 번 더 청소합니다.
+      # zoxide가 'cd'를 함수나 별칭으로 가로채는 것을 방지하기 위해 cd도 목록에 추가합니다.
+      if is_container; then
+        # 1. Zsh 훅 제거 (디렉토리 이동 시 에러 방지)
+        if [[ -n "$chpwd_functions" ]]; then
+          chpwd_functions=(''${chpwd_functions:#__zoxide_hook})
+        fi
+        if [[ -n "$precmd_functions" ]]; then
+          precmd_functions=(''${precmd_functions:#_atuin_precmd})
+        fi
+
+        # 2. 별칭 및 함수 제거
+        unalias ls ll lt cat v vi vim g z cd 2>/dev/null
+        unset -f z zi cd __zoxide_hook _atuin_precmd 2>/dev/null
       fi
     '';
 
-    initContent = lib.mkMerge [
-      (lib.mkBefore ''
-        # [Ghostty] Shell Integration (ONLY if running INSIDE Ghostty)
-        if [[ -n "$GHOSTTY_RESOURCES_DIR" ]]; then
-          if [[ -f "/usr/share/ghostty/shell-integration/zsh/ghostty-integration" ]]; then
-            source "/usr/share/ghostty/shell-integration/zsh/ghostty-integration"
-          elif [[ -f "$HOME/.nix-profile/share/ghostty/shell-integration/zsh/ghostty-integration" ]]; then
-            source "$HOME/.nix-profile/share/ghostty/shell-integration/zsh/ghostty-integration"
-          fi
-        fi
-
-        if [[ "$TERM" == "zellij" ]]; then
-          export TERM=xterm-256color
-          export ZELLIJ_SKIP_AUTOSTART=true
-        fi
-
-        # [SSH Detection] More robust check
-        function is_ssh() {
-          [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]] || \
-          [[ "$(ps -o comm= -p $PPID 2>/dev/null)" == "sshd" ]]
-        }
-
-        if is_ssh; then
-          export STARSHIP_CONFIG="$HOME/.config/starship-ssh.toml"
-          # Cache IP address for Starship to avoid lag on every prompt render
-          export SSH_LOCAL_IP=$(ip -4 addr show scope global 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1 | head -n1 || hostname)
-        fi
-      '')
-      ''
-        # fnm initialization code
-        if command -v fnm &>/dev/null; then
-          eval "$(fnm env --use-on-cd --shell zsh)"
-        fi
-
-        # --- Autocompletion Caching for Performance ---
-        mkdir -p ~/.zsh_cache
-
-        # Helm 自动补全 (Cached)
-        if command -v helm &>/dev/null; then
-          if [[ ! -f ~/.zsh_cache/helm_completion ]]; then
-            helm completion zsh > ~/.zsh_cache/helm_completion 2>/dev/null
-          fi
-          source ~/.zsh_cache/helm_completion
-        fi
-
-        # Kubectl 自动补全 (Cached)
-        if command -v kubectl &>/dev/null; then
-          if [[ ! -f ~/.zsh_cache/kubectl_completion ]]; then
-            kubectl completion zsh > ~/.zsh_cache/kubectl_completion 2>/dev/null
-          fi
-          source ~/.zsh_cache/kubectl_completion
-        fi
-        
-        export PATH=$HOME/.local/bin:$PATH
-
-        # [Key Bindings] Enhancing bindings for broader terminal compatibility
-        bindkey '^[[A' history-substring-search-up    # Arrow Up
-        bindkey '^[[B' history-substring-search-down  # Arrow Down
-        bindkey '^[OA' history-substring-search-up    # Arrow Up (Application Mode)
-        bindkey '^[OB' history-substring-search-down  # Arrow Down (Application Mode)
-
-        # ---------------------------------------------------------
-        # [New] sudo wrapper to handle aliases and Nix paths
-        # ---------------------------------------------------------
-        function sudo() {
-          if [[ "$1" == "vim" || "$1" == "vi" ]]; then
-            shift
-            command sudo env PATH="$PATH" nvim "$@"
-          else
-            command sudo env PATH="$PATH" "$@"
-          fi
-        }
-
-        # ---------------------------------------------------------
-
-      ''
-    ];
-
-    # Native Nix Zsh plugins (faster startup than oh-my-zsh)
-    plugins = [
-      {
-        name = "zsh-history-substring-search";
-        src = "${pkgs.zsh-history-substring-search}/share/zsh-history-substring-search";
-      }
-    ];
+    oh-my-zsh = {
+      enable = true;
+      plugins = [ "git" "history-substring-search" ];
+    };
 
     shellAliases = {
-      # Kubernetes & Helm Shortcuts
-      k = "kubectl";
-      h = "helm";
+      # Custom Keyboard Guide
+      keymap = "bat ~/nixos-home-manager/docs/keyboard-layout.md";
 
-      ls = "eza";
-      ll = "eza -l --icons --git -a";
-      lt = "eza --tree --level=2 --long --icons --git";
-      
-      # [New] cat -> bat mapping
-      cat = "bat";
-      
-      # [New] Clipboard copy alias
-      tocb = "xclip -selection clipboard";
-
-      hms = "home-manager switch --flake ~/home_env_dotfiles/#default --impure";
-      vi = "nvim";
-      vim = "nvim";
-      # [New] Fix for using sudo with nix-installed nvim
-      svim = "sudo env PATH=$PATH nvim";
-      zj = "zellij";
-      y = "yazi";
-      
-      # [New] Nix cleanup alias
-      nix-clean = "nix-env --delete-generations old && nix-store --gc";
-
-      zj_shortcuts = ''echo -e "\033[1;34m=== Zellij Custom Shortcuts (Tmux Style) ===\033[0m" && \
-                        echo -e "\033[1;33m[ Quick Actions (Alt Key) ]\033[0m" && \
-                        echo "  Alt + n       : New Pane (Right)" && \
-                        echo "  Alt + h/j/k/l : Move focus (Left/Down/Up/Right)" && \
-                        echo "  Alt + i/o     : Move Tab (Prev/Next)" && \
-                        echo "  Alt + =/-     : Resize Pane (Increase/Decrease)" && \
-                        echo -e "\033[1;33m[ Core Modes (Prefix) ]\033[0m" && \
-                        echo "  Ctrl + g      : LOCKED Mode (Essential for NeoVim!)" && \
-                        echo "  Ctrl + s      : SCROLL/COPY Mode (Like tmux prefix + [)" && \
-                        echo "                  -> v: Select, y/Enter: Copy" && \
-                        echo "  Ctrl + p      : PANE Mode (Split, Resize, etc.)" && \
-                        echo "  Ctrl + t      : TAB Mode (New, Rename, etc.)" && \
-                        echo "  Ctrl + n      : RESIZE Mode" && \
-                        echo "  Ctrl + o      : SESSION Mode" && \
-                        echo "  Ctrl + q      : QUIT Zellij" && \
-                        echo -e "\033[1;32mTip: Bottom bar changes based on these modes!\033[0m" '';
+      # WireGuard Aliases
+      vpn-on = "sudo systemctl start wg-quick-wg0";
+      vpn-off = "sudo systemctl stop wg-quick-wg0";
+      vpn-stat = "sudo wg";
     };
   };
 }
