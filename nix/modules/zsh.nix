@@ -19,9 +19,6 @@
     envExtra = ''
       export PATH=$HOME/.local/bin:$PATH
       export ZSH_DISABLE_COMPFIX="true" 
-      
-      # Force autosuggestion color to be distinct (Color 8 + Italic + Underline)
-      export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=8,italic,underline"
     '';
 
     # [Zsh Initialization]
