@@ -13,7 +13,7 @@
       ZSH_AUTOSUGGEST_USE_ASYNC = "1";
 
       ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE = "20";
-      ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=#5c6370,italic"; # 强制真彩色灰字，无视主题引擎
+      ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=240"; # 使用256色彩表索引色，避免Zsh在清除16进制真彩色时出现的高亮残留Bug
       ZSH_DISABLE_COMPFIX = "true"; # Distrobox/Nix 권한 경고 방지
     };
 
