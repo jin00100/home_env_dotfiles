@@ -13,6 +13,7 @@
       ZSH_AUTOSUGGEST_USE_ASYNC = "1";
       ZSH_AUTOSUGGEST_MANUAL_REBIND = "1";
       ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE = "20";
+      ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=8,italic"; # 固定为斜体灰色，防止颜色冲突
       ZSH_DISABLE_COMPFIX = "true"; # Distrobox/Nix 권한 경고 방지
     };
 
