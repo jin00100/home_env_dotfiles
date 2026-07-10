@@ -89,6 +89,8 @@
     };
 
     shellAliases = {
+      cl = "clear";
+
       # Custom Keyboard Guide
       keymap = "bat ~/nixos-home-manager/docs/keyboard-layout.md";
 
