@@ -11,9 +11,9 @@
     # [Zsh Performance Tuning]
     localVariables = {
       ZSH_AUTOSUGGEST_USE_ASYNC = "1";
-      ZSH_AUTOSUGGEST_MANUAL_REBIND = "1";
+
       ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE = "20";
-      ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=8,italic"; # 固定为斜体灰色，防止颜色冲突
+      ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE = "fg=#5c6370,italic"; # 强制真彩色灰字，无视主题引擎
       ZSH_DISABLE_COMPFIX = "true"; # Distrobox/Nix 권한 경고 방지
     };
 
@@ -58,6 +58,11 @@
       # [Keybindings]
       bindkey '^[[A' history-substring-search-up
       bindkey '^[[B' history-substring-search-down
+
+      # [Fix Text Color]
+      # 强制普通输入（如 jin@jin）渲染为明亮的纯白色，覆盖终端自带的灰暗默认色
+      typeset -gA ZSH_HIGHLIGHT_STYLES
+      ZSH_HIGHLIGHT_STYLES[default]="fg=white,bold"
 
 
       # [Final Cleanup for Containers]
