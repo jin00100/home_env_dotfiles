@@ -184,6 +184,15 @@ if cmp_ok then
   })
 end
 
+safe_require("luasnip", function(luasnip)
+  luasnip.config.set_config({
+    history = true,
+    updateevents = "TextChanged,TextChangedI",
+    delete_check_events = "TextChanged",
+  })
+  require("luasnip.loaders.from_vscode").lazy_load()
+end)
+
 -- Treesitter Config
 safe_require("nvim-treesitter", function(ts)
   ts.setup()
@@ -226,15 +235,38 @@ if cmp_lsp_ok then capabilities = cmp_nvim_lsp.default_capabilities() end
 
 local servers = { 'gopls', 'nil_ls', 'pyright', 'bashls', 'yamlls', 'taplo', 'jsonls', 'cmake', 'autotools_ls' }
 
+local function get_server_opts(name)
+  local opts = { capabilities = capabilities }
+  if name == "yamlls" then
+    opts.settings = {
+      yaml = {
+        schemaStore = {
+          enable = true, -- Enable SchemaStore for general schemas just in case
+        },
+        schemas = {
+          kubernetes = { "k8s/**/*.yaml", "k8s/**/*.yml", "*k8s*.yaml", "*k8s*.yml" },
+          ["file:///home/nxtp-sj/.config/nvim/gitlab-ci.json"] = { "*gitlab-ci*.yml", ".gitlab-ci.yml" },
+        },
+      },
+    }
+  end
+  return opts
+end
+
 if vim.lsp.config then
   for _, lsp in ipairs(servers) do
-    vim.lsp.config(lsp, { capabilities = capabilities })
-    vim.lsp.enable(lsp)
-  end
-else
-  local lspconfig_ok, lspconfig = pcall(require, "lspconfig")
-  if lspconfig_ok then
-    for _, lsp in ipairs(servers) do lspconfig[lsp].setup { capabilities = capabilities } end
+    local name = lsp
+    pcall(function()
+      vim.lsp.config(name, get_server_opts(name))
+      local cfg = vim.lsp.config[name]
+      if cfg and cfg.cmd and type(cfg.cmd) == "table" and cfg.cmd[1] then
+        if vim.fn.executable(cfg.cmd[1]) == 1 then
+          vim.lsp.enable(name)
+        end
+      else
+        vim.lsp.enable(name)
+      end
+    end)
   end
 end
 

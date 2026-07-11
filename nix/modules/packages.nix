@@ -52,6 +52,7 @@
     ast-grep      # ast-grep CLI
     lua51Packages.jsregexp # Luasnip dependency
     gopls         # Go LSP
+    go            # Go Compiler
     clang-tools   # clangd 등 (헤더 검색 등 에디터용)
     yaml-language-server              # YAML LSP
     nodePackages.bash-language-server # Bash LSP

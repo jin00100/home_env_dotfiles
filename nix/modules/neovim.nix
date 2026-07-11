@@ -42,7 +42,6 @@
       nvim-notify
       
       # LSP & Completion
-      nvim-lspconfig
       nvim-cmp
       cmp-nvim-lsp
       cmp-buffer
@@ -79,5 +78,6 @@
     "nvim/lua/options.lua".source = ./nvim/lua/options.lua;
     "nvim/lua/keymaps.lua".source = ./nvim/lua/keymaps.lua;
     "nvim/lua/plugins.lua".source = ./nvim/lua/plugins.lua;
+    "nvim/gitlab-ci.json".source = ./nvim/gitlab-ci.json;
   };
 }
