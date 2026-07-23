@@ -238,6 +238,9 @@ local servers = { 'gopls', 'nil_ls', 'pyright', 'bashls', 'yamlls', 'taplo', 'js
 local function get_server_opts(name)
   local opts = { capabilities = capabilities }
   if name == "yamlls" then
+    opts.cmd = { "yaml-language-server", "--stdio" }
+    opts.filetypes = { "yaml", "yaml.gitlab" }
+    opts.root_dir = vim.fs.root(0, { ".git", ".gitlab-ci.yml" })
     opts.settings = {
       yaml = {
         schemaStore = {
